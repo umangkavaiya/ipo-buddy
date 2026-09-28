@@ -11,6 +11,13 @@
 *.suo
 *.userpreferences
 
+## Node.js & Frontend
+node_modules/
+.next/
+out/
+build/
+*.tsbuildinfo
+
 ## Database & Local Storage
 *.db
 *.db-shm
@@ -20,6 +27,7 @@
 
 ## Environment & Secrets
 .env
+.env*.local
 appsettings.Development.json
 appsettings.Local.json
 
