@@ -212,17 +212,22 @@ flowchart TD
         WEB["Next.js 15 PWA<br/>Tailwind CSS (Edge CDN)"]
     end
 
-    subgraph API["🔐 API Server (Render - ₹0)"]
-        DJANGO["Django 5.x + Django Ninja<br/>JWT Auth (Web Service)"]
+    subgraph API["🔐 API Server (.NET 10 Clean Architecture - Local Port 5074)"]
+        DOTNET["ASP.NET Core Minimal API<br/>HMAC Bearer Token Auth (Render - ₹0)"]
         CRON_PING["cron-job.org<br/>(Heartbeat 9am-4pm IST)"]
-        CRON_PING -. Keep Alive .-> DJANGO
+        CRON_PING -. Keep Alive .-> DOTNET
     end
 
-    subgraph Core["⚙️ Core Modules"]
-        IPO_M["IPO Module<br/>(dashboard, search, alerts)"]
-        GRP["Group Module<br/>(create, join, watchlist, chat)"]
-        SPLIT["Split Module<br/>(generic calculator)"]
-        USER_M["User Module<br/>(auth, profile, preferences)"]
+    subgraph Core["⚙️ Clean Architecture Layers"]
+        DOMAIN["IpoBuddy.Domain<br/>(User, Ipo, Group, Split Entities)"]
+        APP_LAYER["IpoBuddy.Application<br/>(DTOs, Interfaces, SplitCalculator)"]
+        INFRA["IpoBuddy.Infrastructure<br/>(EF Core SQLite/Supabase Npgsql, Scrapers)"]
+        API_LAYER["IpoBuddy.Api<br/>(Auth, Ipo, Group, Split Endpoints + Scalar UI)"]
+        API_LAYER --> APP_LAYER
+        API_LAYER --> INFRA
+        INFRA --> APP_LAYER
+        INFRA --> DOMAIN
+        APP_LAYER --> DOMAIN
     end
 
     subgraph Data["💾 Cloud Database (Supabase - ₹0)"]
@@ -245,14 +250,14 @@ flowchart TD
         PUSH["Push (Firebase FCM free tier)"]
     end
 
-    WEB --> DJANGO
-    DJANGO --> Core
+    WEB --> DOTNET
+    DOTNET --> Core
     Core --> Data
     IPO_SYNC --> GROWW
     GMP_SYNC --> INVESTORGAIN
     IPO_SYNC --> PG
     GMP_SYNC --> PG
-    DJANGO -. Deep Links .-> REGISTRAR
+    DOTNET -. Deep Links .-> REGISTRAR
     Core -. Alerts .-> EMAIL
     Core -. Alerts .-> PUSH
 ```
@@ -261,7 +266,8 @@ flowchart TD
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| Monolith vs. Microservices | **Monolith** | Solo founder. One Django project, 4 clean modules. Decompose only if you hit 50K+ users. |
+| Architecture Style | **.NET 10 Clean Architecture** | Clean separation of Domain, Application, Infrastructure, and Api layers. |
+| Financial Precision | **C# `decimal` (128-bit IEEE)** | Zero floating-point rounding errors across splits and tax math. |
 | Hosting & DB Split | **Vercel + Render + Supabase** | 100% free forever, zero Linux administration, automated SSL, global CDN. |
 | Background Scheduler | **GitHub Actions Cron (replaces Celery/Redis)** | Free PaaS hosts charge $7+/mo for background workers. GitHub Actions gives 2,000 free runner mins/mo, directly writing to Supabase. |
 | DB Connection Pooler | **Supavisor (Port 6543)** | Built into Supabase; prevents serverless/Gunicorn worker spikes from exhausting Postgres connections. |
@@ -730,10 +736,11 @@ Every mutating action is logged:
 │  Deploy: Git push to main → auto-deploy in ~60s          │
 └──────────────────────────────────────────────────────────┘
 
-┌─ Backend: Render Free Web Service (₹0/mo) ──────────────┐
-│  Python 3.12 + Django 5.x + Django Ninja + Gunicorn      │
-│  512 MB RAM, 0.1 vCPU                                    │
-│  Auto SSL (Let's Encrypt), HTTP/2 enabled                │
+┌─ Backend: Render Free Web Service / Docker (₹0/mo) ─────┐
+│  .NET 10 Clean Architecture Minimal API                  │
+│  Local Dev: http://localhost:5074 (Scalar: /scalar/v1)   │
+│  Memory: ~60 MB RAM (well under Render 512 MB free tier) │
+│  Cold start: ~200ms compiled binary                      │
 │  *Heartbeat: cron-job.org pings /api/health every 10 min │
 │   during trading hours (9 AM - 4 PM IST) to prevent sleep│
 └──────────────────────────────────────────────────────────┘
