@@ -92,10 +92,31 @@ Passed! - Failed: 0, Passed: 9, Skipped: 0, Total: 9, Duration: 2 s
 
 ## 4. How to Run Locally
 
+### 1. Run the .NET 10 API
 ```bash
-# 1. Run the API
+# Starts backend API on http://localhost:5074
 dotnet run --project src/IpoBuddy.Api
-
-# 2. View Interactive Scalar API Documentation
-# Open your browser at http://localhost:5000/scalar/v1 or http://localhost:5247/scalar/v1
 ```
+- Interactive Scalar API Documentation: [http://localhost:5074/scalar/v1](http://localhost:5074/scalar/v1)
+- Health check probe: [http://localhost:5074/api/health](http://localhost:5074/api/health)
+
+### 2. Run the Next.js Frontend
+```bash
+cd frontend
+npm.cmd run dev
+```
+- Open your browser at [http://localhost:3000](http://localhost:3000)
+
+---
+
+## 5. Deployment & Automation (100% Zero-Cost)
+
+1. **Backend on Render Free Web Service**:
+   - `Dockerfile`: Multi-stage .NET 10 container image (~90MB).
+   - `render.yaml`: Blueprint configuration with dynamic `$PORT` routing and `/api/health` probe.
+   - Database: Supabase PostgreSQL 16 connection URI passed in `DATABASE_URL`.
+2. **Frontend on Vercel Hobby**:
+   - Deploy `frontend/` directory with `NEXT_PUBLIC_API_URL` pointing to the Render backend URL.
+3. **Scheduled Ingestion via GitHub Actions**:
+   - `.github/workflows/ipo_sync.yml`: Automates IPO & GMP scraping on Indian market trading days (Mon–Fri at 10 AM, 2 PM, and 5 PM IST) at zero infrastructure cost.
+

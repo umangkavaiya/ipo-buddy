@@ -9,6 +9,13 @@ using IpoBuddy.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Dynamic PORT for cloud hosting (e.g. Render, Railway)
+var port = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrEmpty(port))
+{
+    builder.WebHost.UseUrls($"http://*:{port}");
+}
+
 // 1. Clean Architecture Infrastructure Layer
 builder.Services.AddInfrastructureServices(builder.Configuration);
 

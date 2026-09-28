@@ -1,0 +1,35 @@
+name: Scheduled IPO & GMP Sync
+
+on:
+  schedule:
+    # Mon-Fri: 04:30 UTC (10:00 AM IST), 08:30 UTC (2:00 PM IST), 11:30 UTC (5:00 PM IST)
+    - cron: '30 4,8,11 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: 'Target API Base URL (optional, defaults to secret or Render URL)'
+        required: false
+        default: ''
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Public Feed Ingestion
+        run: |
+          API_URL="${{ inputs.target_url || secrets.API_BASE_URL || 'https://ipobuddy-api.onrender.com' }}"
+          echo "Triggering IPO synchronization on: $API_URL"
+          
+          # Wake up or call the sync endpoint (allows up to 60s for Render free cold start)
+          RESPONSE=$(curl -s -X POST "$API_URL/api/admin/sync-ipos" \
+            -H "Content-Type: application/json" \
+            --max-time 90 \
+            --retry 2 \
+            --retry-delay 5 || echo "FAILED")
+            
+          echo "Response: $RESPONSE"
+          if [[ "$RESPONSE" == *"success"* ]]; then
+            echo "IPO & GMP synchronization completed successfully."
+          else
+            echo "Warning: Sync request could not be verified or endpoint is spinning up."
+          fi

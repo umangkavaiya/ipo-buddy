@@ -1,0 +1,16 @@
+# Render Blueprint for Zero-Cost .NET 10 API Deployment
+services:
+  - type: web
+    name: ipobuddy-api
+    runtime: docker
+    plan: free
+    region: singapore # Nearest low-latency region to India
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: DATABASE_URL
+        sync: false # Set in Render dashboard to your Supabase PostgreSQL connection URI
+      - key: JWT_SECRET
+        generateValue: true

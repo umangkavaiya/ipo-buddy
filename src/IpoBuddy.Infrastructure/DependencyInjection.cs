@@ -21,7 +21,8 @@ public static class DependencyInjection
                 connectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) ||
                 connectionString.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
             {
-                options.UseNpgsql(connectionString);
+                var npgsqlConn = ParsePostgresConnectionString(connectionString);
+                options.UseNpgsql(npgsqlConn);
             }
             else
             {
@@ -41,5 +42,33 @@ public static class DependencyInjection
         });
 
         return services;
+    }
+
+    private static string ParsePostgresConnectionString(string connectionString)
+    {
+        if (connectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) ||
+            connectionString.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+        {
+            try
+            {
+                var uri = new Uri(connectionString);
+                var userInfo = uri.UserInfo.Split(':');
+                var builder = new Npgsql.NpgsqlConnectionStringBuilder
+                {
+                    Host = uri.Host,
+                    Port = uri.Port > 0 ? uri.Port : 5432,
+                    Username = userInfo[0],
+                    Password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : string.Empty,
+                    Database = uri.AbsolutePath.TrimStart('/'),
+                    SslMode = Npgsql.SslMode.Require
+                };
+                return builder.ConnectionString;
+            }
+            catch
+            {
+                return connectionString;
+            }
+        }
+        return connectionString;
     }
 }
