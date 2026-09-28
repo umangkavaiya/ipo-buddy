@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/IpoBuddy.Api/IpoBuddy.Api.csproj" />
+    <Project Path="src/IpoBuddy.Application/IpoBuddy.Application.csproj" />
+    <Project Path="src/IpoBuddy.Domain/IpoBuddy.Domain.csproj" />
+    <Project Path="src/IpoBuddy.Infrastructure/IpoBuddy.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/IpoBuddy.Tests/IpoBuddy.Tests.csproj" />
+  </Folder>
+</Solution>
