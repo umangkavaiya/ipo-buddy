@@ -32,13 +32,10 @@ public static class DependencyInjection
 
         services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
-        // HTTP Client for public scrapers with automatic redirect handling
+        // HTTP Client for public feeds using system SSL trust
         services.AddHttpClient<IIpoSyncService, IpoSyncService>(client =>
         {
             client.Timeout = TimeSpan.FromSeconds(15);
-        }).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-        {
-            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true // For resilient dev on windows
         });
 
         return services;
