@@ -6,11 +6,11 @@ using IpoBuddy.Application.DTOs;
 
 namespace IpoBuddy.Tests;
 
-public class GroupAndSplitIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
+public class GroupAndSplitIntegrationTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly HttpClient _client;
 
-    public GroupAndSplitIntegrationTests(WebApplicationFactory<Program> factory)
+    public GroupAndSplitIntegrationTests(CustomWebApplicationFactory factory)
     {
         _client = factory.CreateClient();
     }

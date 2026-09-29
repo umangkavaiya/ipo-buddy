@@ -71,3 +71,4 @@ public class FinancialPrecisionTests
         Assert.Null(tamperedId);
     }
 }
+

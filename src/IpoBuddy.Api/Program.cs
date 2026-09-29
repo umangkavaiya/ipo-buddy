@@ -117,13 +117,14 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Auto-create database schema on startup for local dev
+// Auto-create database schema on startup for local dev & seed initial data
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     try
     {
         db.Database.EnsureCreated();
+        DbInitializer.SeedInitialDataAsync(db).GetAwaiter().GetResult();
     }
     catch
     {
