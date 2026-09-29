@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using IpoBuddy.Api.Auth;
 using IpoBuddy.Application.DTOs;
 using IpoBuddy.Application.Interfaces;
 using IpoBuddy.Domain.Entities;
@@ -15,8 +16,10 @@ public static class GroupEndpoints
             ClaimsPrincipal principal,
             IAppDbContext db) =>
         {
-            if (!Guid.TryParse(principal.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            var userGuid = principal.GetUserId();
+            if (!userGuid.HasValue)
                 return Results.Unauthorized();
+            var userId = userGuid.Value;
 
             string name = dto.Name?.Trim() ?? string.Empty;
             if (string.IsNullOrWhiteSpace(name))
@@ -58,11 +61,12 @@ public static class GroupEndpoints
 
         group.MapGet("/groups", async (ClaimsPrincipal principal, IAppDbContext db) =>
         {
-            if (!Guid.TryParse(principal.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            var userId = principal.GetUserId();
+            if (!userId.HasValue)
                 return Results.Unauthorized();
 
             var groups = await db.GroupMembers
-                .Where(m => m.UserId == userId && m.Group.IsActive)
+                .Where(m => m.UserId == userId.Value && m.Group.IsActive)
                 .Select(m => new GroupDto(
                     m.Group.Id,
                     m.Group.Name,
@@ -78,7 +82,8 @@ public static class GroupEndpoints
 
         group.MapGet("/groups/{id:guid}", async (Guid id, ClaimsPrincipal principal, IAppDbContext db) =>
         {
-            if (!Guid.TryParse(principal.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            var userId = principal.GetUserId();
+            if (!userId.HasValue)
                 return Results.Unauthorized();
 
             var g = await db.Groups
@@ -88,7 +93,7 @@ public static class GroupEndpoints
 
             if (g == null) return Results.NotFound();
 
-            if (!g.Members.Any(m => m.UserId == userId))
+            if (!g.Members.Any(m => m.UserId == userId.Value))
             {
                 return Results.Forbid();
             }
@@ -118,7 +123,8 @@ public static class GroupEndpoints
             ClaimsPrincipal principal,
             IAppDbContext db) =>
         {
-            if (!Guid.TryParse(principal.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            var userId = principal.GetUserId();
+            if (!userId.HasValue)
                 return Results.Unauthorized();
 
             string code = dto.InviteCode?.Trim().ToUpperInvariant() ?? string.Empty;
@@ -131,7 +137,7 @@ public static class GroupEndpoints
                 return Results.NotFound(new { status = "error", message = "Invalid invite code" });
             }
 
-            if (g.Members.Any(m => m.UserId == userId))
+            if (g.Members.Any(m => m.UserId == userId.Value))
             {
                 return Results.BadRequest(new { status = "error", message = "You are already a member of this group" });
             }
@@ -144,7 +150,7 @@ public static class GroupEndpoints
             db.GroupMembers.Add(new GroupMember
             {
                 GroupId = g.Id,
-                UserId = userId,
+                UserId = userId.Value,
                 Role = GroupRole.Member
             });
 
@@ -166,10 +172,11 @@ public static class GroupEndpoints
             ClaimsPrincipal principal,
             IAppDbContext db) =>
         {
-            if (!Guid.TryParse(principal.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            var userId = principal.GetUserId();
+            if (!userId.HasValue)
                 return Results.Unauthorized();
 
-            var isMember = await db.GroupMembers.AnyAsync(m => m.GroupId == id && m.UserId == userId);
+            var isMember = await db.GroupMembers.AnyAsync(m => m.GroupId == id && m.UserId == userId.Value);
             if (!isMember) return Results.Forbid();
 
             var ipoExists = await db.Ipos.AnyAsync(i => i.Id == ipoId);
@@ -182,7 +189,7 @@ public static class GroupEndpoints
                 {
                     GroupId = id,
                     IpoId = ipoId,
-                    AddedById = userId
+                    AddedById = userId.Value
                 });
                 await db.SaveChangesAsync();
             }

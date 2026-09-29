@@ -131,8 +131,9 @@ export const api = {
     return res.json();
   },
 
-  async syncIpos(): Promise<{ status: string; message: string }> {
-    const res = await fetch(`${API_BASE_URL}/admin/sync-ipos`, { method: "POST" });
+  async syncIpos(): Promise<{ status: string; message: string; updatedCount?: number }> {
+    const res = await fetch(`${API_BASE_URL}/ipos/sync`, { method: "POST" });
+    if (!res.ok) throw new Error("Sync failed");
     return res.json();
   },
 

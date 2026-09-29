@@ -87,14 +87,18 @@ builder.Services.AddAuthentication(options =>
                 await db.SaveChangesAsync();
             }
 
-            var appIdentity = new ClaimsIdentity(new[]
+            if (context.Principal?.Identity is ClaimsIdentity primaryIdentity)
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim("clerk_id", clerkId),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.DisplayName)
-            }, "ClerkAppIdentity");
-            principal?.AddIdentity(appIdentity);
+                var oldClaim = primaryIdentity.FindFirst(ClaimTypes.NameIdentifier);
+                if (oldClaim != null)
+                {
+                    primaryIdentity.RemoveClaim(oldClaim);
+                }
+                primaryIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
+                primaryIdentity.AddClaim(new Claim("clerk_id", clerkId));
+                primaryIdentity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
+                primaryIdentity.AddClaim(new Claim(ClaimTypes.Name, user.DisplayName));
+            }
         }
     };
 })

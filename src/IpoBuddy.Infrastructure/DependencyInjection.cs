@@ -38,6 +38,9 @@ public static class DependencyInjection
             client.Timeout = TimeSpan.FromSeconds(15);
         });
 
+        // Periodic real-time background sync
+        services.AddHostedService<IpoSyncBackgroundService>();
+
         return services;
     }
 

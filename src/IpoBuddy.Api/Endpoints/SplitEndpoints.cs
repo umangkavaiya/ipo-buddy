@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using IpoBuddy.Api.Auth;
 using IpoBuddy.Application.Common;
 using IpoBuddy.Application.DTOs;
 using IpoBuddy.Application.Interfaces;
@@ -17,8 +18,10 @@ public static class SplitEndpoints
             ClaimsPrincipal principal,
             IAppDbContext db) =>
         {
-            if (!Guid.TryParse(principal.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            var userIdNullable = principal.GetUserId();
+            if (!userIdNullable.HasValue)
                 return Results.Unauthorized();
+            var userId = userIdNullable.Value;
 
             if (dto.TotalAmount <= 0)
                 return Results.BadRequest(new { status = "error", message = "Total amount must be greater than zero" });
@@ -97,8 +100,10 @@ public static class SplitEndpoints
             ClaimsPrincipal principal,
             IAppDbContext db) =>
         {
-            if (!Guid.TryParse(principal.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            var userIdNullable = principal.GetUserId();
+            if (!userIdNullable.HasValue)
                 return Results.Unauthorized();
+            var userId = userIdNullable.Value;
 
             var isMember = await db.GroupMembers.AnyAsync(m => m.GroupId == id && m.UserId == userId);
             if (!isMember) return Results.Forbid();
@@ -136,8 +141,10 @@ public static class SplitEndpoints
             ClaimsPrincipal principal,
             IAppDbContext db) =>
         {
-            if (!Guid.TryParse(principal.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            var userIdNullable = principal.GetUserId();
+            if (!userIdNullable.HasValue)
                 return Results.Unauthorized();
+            var userId = userIdNullable.Value;
 
             var split = await db.Splits
                 .Include(s => s.Entries)
@@ -171,8 +178,10 @@ public static class SplitEndpoints
 
         group.MapGet("/splits/balances", async (ClaimsPrincipal principal, IAppDbContext db) =>
         {
-            if (!Guid.TryParse(principal.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            var userIdNullable = principal.GetUserId();
+            if (!userIdNullable.HasValue)
                 return Results.Unauthorized();
+            var userId = userIdNullable.Value;
 
             var balances = new Dictionary<Guid, (string DisplayName, decimal NetAmount)>();
 

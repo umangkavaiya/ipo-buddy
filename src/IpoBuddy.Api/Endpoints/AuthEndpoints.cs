@@ -62,10 +62,10 @@ public static class AuthEndpoints
 
         group.MapGet("/profile", async (ClaimsPrincipal principal, IAppDbContext db) =>
         {
-            var userIdStr = principal.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdStr, out var userId)) return Results.Unauthorized();
+            var userId = principal.GetUserId();
+            if (!userId.HasValue) return Results.Unauthorized();
 
-            var user = await db.Users.FindAsync(userId);
+            var user = await db.Users.FindAsync(userId.Value);
             if (user == null) return Results.NotFound();
 
             return Results.Ok(new UserDto(user.Id, user.Phone, user.Email, user.DisplayName, user.SubscriptionTier.ToString()));
@@ -76,10 +76,10 @@ public static class AuthEndpoints
             ClaimsPrincipal principal,
             IAppDbContext db) =>
         {
-            var userIdStr = principal.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdStr, out var userId)) return Results.Unauthorized();
+            var userId = principal.GetUserId();
+            if (!userId.HasValue) return Results.Unauthorized();
 
-            var user = await db.Users.FindAsync(userId);
+            var user = await db.Users.FindAsync(userId.Value);
             if (user == null) return Results.NotFound();
 
             if (!string.IsNullOrWhiteSpace(dto.DisplayName))

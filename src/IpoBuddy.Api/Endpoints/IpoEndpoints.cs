@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using IpoBuddy.Api.Auth;
 using IpoBuddy.Application.DTOs;
 using IpoBuddy.Application.Interfaces;
 using IpoBuddy.Domain.Entities;
@@ -50,13 +51,20 @@ public static class IpoEndpoints
             return ipo != null ? Results.Ok(ToDto(ipo)) : Results.NotFound();
         }).WithSummary("Get detailed information for an IPO");
 
+        group.MapPost("/ipos/sync", async (IpoBuddy.Infrastructure.Services.IIpoSyncService syncService) =>
+        {
+            int count = await syncService.SyncIposAsync();
+            return Results.Ok(new { status = "success", message = $"Real-time sync completed. {count} IPOs updated.", updatedCount = count });
+        }).WithTags("IPOs").WithSummary("Trigger on-demand real-time IPO and GMP synchronization");
+
         group.MapGet("/watchlist", async (ClaimsPrincipal principal, IAppDbContext db) =>
         {
-            if (!Guid.TryParse(principal.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            var userId = principal.GetUserId();
+            if (!userId.HasValue)
                 return Results.Unauthorized();
 
             var list = await db.WatchlistItems
-                .Where(w => w.UserId == userId)
+                .Where(w => w.UserId == userId.Value)
                 .Include(w => w.Ipo)
                 .Select(w => ToDto(w.Ipo))
                 .ToListAsync();
@@ -66,16 +74,17 @@ public static class IpoEndpoints
 
         group.MapPost("/watchlist/{ipoId:guid}", async (Guid ipoId, ClaimsPrincipal principal, IAppDbContext db) =>
         {
-            if (!Guid.TryParse(principal.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            var userId = principal.GetUserId();
+            if (!userId.HasValue)
                 return Results.Unauthorized();
 
             var exists = await db.Ipos.AnyAsync(i => i.Id == ipoId);
             if (!exists) return Results.NotFound("IPO not found");
 
-            var item = await db.WatchlistItems.FirstOrDefaultAsync(w => w.UserId == userId && w.IpoId == ipoId);
+            var item = await db.WatchlistItems.FirstOrDefaultAsync(w => w.UserId == userId.Value && w.IpoId == ipoId);
             if (item == null)
             {
-                db.WatchlistItems.Add(new WatchlistItem { UserId = userId, IpoId = ipoId });
+                db.WatchlistItems.Add(new WatchlistItem { UserId = userId.Value, IpoId = ipoId });
                 await db.SaveChangesAsync();
             }
 
@@ -84,10 +93,11 @@ public static class IpoEndpoints
 
         group.MapDelete("/watchlist/{ipoId:guid}", async (Guid ipoId, ClaimsPrincipal principal, IAppDbContext db) =>
         {
-            if (!Guid.TryParse(principal.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            var userId = principal.GetUserId();
+            if (!userId.HasValue)
                 return Results.Unauthorized();
 
-            var item = await db.WatchlistItems.FirstOrDefaultAsync(w => w.UserId == userId && w.IpoId == ipoId);
+            var item = await db.WatchlistItems.FirstOrDefaultAsync(w => w.UserId == userId.Value && w.IpoId == ipoId);
             if (item != null)
             {
                 db.WatchlistItems.Remove(item);
