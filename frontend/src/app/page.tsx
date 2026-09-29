@@ -17,8 +17,6 @@ import {
   ArrowRight,
   LogOut,
   X,
-  Phone,
-  KeyRound,
   Percent,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
@@ -63,13 +61,6 @@ export default function Home() {
   // Tax State
   const [taxGain, setTaxGain] = useState<string>("15000");
   const [taxResult, setTaxResult] = useState<TaxCalculationResult | null>(null);
-
-  // Auth Modal State
-  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
-  const [authPhone, setAuthPhone] = useState<string>("");
-  const [authOtp, setAuthOtp] = useState<string>("123456");
-  const [otpSent, setOtpSent] = useState<boolean>(false);
-  const [authError, setAuthError] = useState<string | null>(null);
 
   // Load Initial IPOs
   const fetchIpos = async () => {
@@ -158,7 +149,7 @@ export default function Home() {
 
   const handleWatchlistToggle = async (ipoId: string) => {
     if (!user) {
-      setShowAuthModal(true);
+      login();
       return;
     }
     const isWatched = watchlist.some((w) => w.id === ipoId);
@@ -279,10 +270,10 @@ export default function Home() {
             </div>
           ) : (
             <button
-              onClick={() => setShowAuthModal(true)}
+              onClick={login}
               className="min-h-[44px] px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md shadow-emerald-600/20 transition-all active:scale-95"
             >
-              Sign In / Register
+              Sign In with Email
             </button>
           )}
         </div>
@@ -504,7 +495,7 @@ export default function Home() {
                 Sign in with your mobile number to star IPOs and keep track of important bidding and allotment dates.
               </p>
               <button
-                onClick={() => setShowAuthModal(true)}
+                onClick={login}
                 className="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-semibold min-h-[44px]"
               >
                 Sign In Now
@@ -553,7 +544,7 @@ export default function Home() {
                 Form private circles with friends and family using 6-character invite codes.
               </p>
               <button
-                onClick={() => setShowAuthModal(true)}
+                onClick={login}
                 className="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-semibold min-h-[44px]"
               >
                 Sign In Now
@@ -713,7 +704,7 @@ export default function Home() {
               <Calculator className="h-8 w-8 text-slate-600 mx-auto mb-2" />
               <p className="text-sm font-semibold text-slate-200">Sign in to calculate group splits</p>
               <button
-                onClick={() => setShowAuthModal(true)}
+                onClick={login}
                 className="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-semibold min-h-[44px]"
               >
                 Sign In Now
@@ -965,121 +956,6 @@ export default function Home() {
                 <strong>Educational estimate only:</strong> Surcharge and health & education cess (4%) may additionally apply depending on overall annual income bracket. Always verify with your tax professional.
               </span>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── Accessible Auth Modal ──────────────────────────── */}
-      {showAuthModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="auth-title"
-            className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl relative"
-          >
-            <button
-              onClick={() => {
-                setShowAuthModal(false);
-                setAuthError(null);
-                setOtpSent(false);
-              }}
-              className="min-h-[44px] min-w-[44px] absolute right-3 top-3 text-slate-400 hover:text-white flex items-center justify-center"
-              aria-label="Close dialog"
-            >
-              <X className="h-4 w-4" />
-            </button>
-
-            <h3 id="auth-title" className="text-base font-bold text-white mb-1">
-              Sign In to IPO Buddy
-            </h3>
-            <p className="text-xs text-slate-400 mb-4">
-              Enter your mobile number to sign in or create an account.
-            </p>
-
-            {authError && (
-              <div className="p-2.5 bg-rose-950/30 border border-rose-900/40 text-rose-400 text-xs rounded-lg mb-3">
-                {authError}
-              </div>
-            )}
-
-            {!otpSent ? (
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  if (!authPhone.trim() || authPhone.length < 10) return;
-                  try {
-                    await api.requestOtp(authPhone.trim());
-                    setOtpSent(true);
-                    setAuthError(null);
-                  } catch (err: unknown) {
-                    setAuthError(err instanceof Error ? err.message : "Failed to send OTP");
-                  }
-                }}
-                className="flex flex-col gap-3"
-              >
-                <div>
-                  <label className="text-xs text-slate-400 block mb-1">Mobile Number</label>
-                  <div className="relative">
-                    <input
-                      type="tel"
-                      placeholder="9876543210"
-                      value={authPhone}
-                      onChange={(e) => setAuthPhone(e.target.value)}
-                      className="min-h-[48px] w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-3 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono"
-                      required
-                    />
-                    <Phone className="h-4 w-4 text-slate-500 absolute left-3.5 top-3.5" />
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  className="min-h-[48px] bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-xl transition-colors mt-2"
-                >
-                  Send Verification OTP
-                </button>
-              </form>
-            ) : (
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  try {
-                    await login(authPhone.trim(), authOtp.trim());
-                    setShowAuthModal(false);
-                    setOtpSent(false);
-                  } catch (err: unknown) {
-                    setAuthError(err instanceof Error ? err.message : "Invalid OTP code");
-                  }
-                }}
-                className="flex flex-col gap-3"
-              >
-                <div>
-                  <label className="text-xs text-slate-400 block mb-1">Enter 6-Digit OTP</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      maxLength={6}
-                      value={authOtp}
-                      onChange={(e) => setAuthOtp(e.target.value)}
-                      className="min-h-[48px] w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-3 text-sm text-center font-mono tracking-widest text-white focus:outline-none focus:border-emerald-500"
-                      required
-                    />
-                    <KeyRound className="h-4 w-4 text-slate-500 absolute left-3.5 top-3.5" />
-                  </div>
-                  <span className="text-[10px] text-emerald-400 block mt-1">
-                    Development OTP code: <strong>123456</strong>
-                  </span>
-                </div>
-
-                <button
-                  type="submit"
-                  className="min-h-[48px] bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-xl transition-colors mt-2"
-                >
-                  Verify & Continue
-                </button>
-              </form>
-            )}
           </div>
         </div>
       )}

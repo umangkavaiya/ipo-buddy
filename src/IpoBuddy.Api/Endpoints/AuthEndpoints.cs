@@ -44,6 +44,7 @@ public static class AuthEndpoints
                 user = new User
                 {
                     Phone = phone,
+                    Email = $"{phone}@local.user",
                     DisplayName = $"Investor {phone[^4..]}"
                 };
                 db.Users.Add(user);

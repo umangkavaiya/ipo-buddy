@@ -9,8 +9,9 @@ public enum SubscriptionTier
 public class User
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public string Phone { get; set; } = string.Empty;
-    public string? Email { get; set; }
+    public string? ClerkId { get; set; }
+    public string? Phone { get; set; }
+    public string Email { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
     public SubscriptionTier SubscriptionTier { get; set; } = SubscriptionTier.Free;
     public DateTime? SubscriptionExpiresAt { get; set; }

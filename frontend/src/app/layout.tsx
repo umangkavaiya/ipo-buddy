@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
 import { AuthProvider } from "@/context/AuthContext";
 
 const geistSans = Geist({
@@ -24,12 +25,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans antialiased selection:bg-emerald-500 selection:text-white">
-        <AuthProvider>
-          {children}
-        </AuthProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+        <body className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans antialiased selection:bg-emerald-500 selection:text-white">
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

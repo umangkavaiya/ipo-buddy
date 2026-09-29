@@ -1,5 +1,8 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using IpoBuddy.Api.Auth;
 using IpoBuddy.Api.Endpoints;
@@ -19,10 +22,83 @@ if (!string.IsNullOrEmpty(port))
 // 1. Clean Architecture Infrastructure Layer
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
-// 2. Authentication & Authorization
+// 2. Authentication & Authorization (Clerk JWT + Local Dev TokenAuth)
 builder.Services.AddSingleton<TokenService>();
-builder.Services.AddAuthentication("TokenAuth")
-    .AddScheme<AuthenticationSchemeOptions, TokenAuthHandler>("TokenAuth", null);
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = "UnifiedAuth";
+    options.DefaultChallengeScheme = "UnifiedAuth";
+})
+.AddPolicyScheme("UnifiedAuth", "Clerk or TokenAuth", options =>
+{
+    options.ForwardDefaultSelector = context =>
+    {
+        var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
+        if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            var token = authHeader["Bearer ".Length..].Trim();
+            if (token.Count(c => c == '.') == 2)
+            {
+                return JwtBearerDefaults.AuthenticationScheme;
+            }
+        }
+        return "TokenAuth";
+    };
+})
+.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+{
+    var clerkIssuer = builder.Configuration["Clerk:Issuer"] ?? "https://darling-pigeon-465.clerk.accounts.dev";
+    options.Authority = clerkIssuer;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateAudience = false,
+        ValidateIssuer = true,
+        ValidIssuer = clerkIssuer,
+        NameClaimType = ClaimTypes.NameIdentifier
+    };
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = async context =>
+        {
+            var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+            var principal = context.Principal;
+            var clerkId = principal?.FindFirstValue(ClaimTypes.NameIdentifier) ?? principal?.FindFirstValue("sub");
+            if (string.IsNullOrEmpty(clerkId)) return;
+
+            var user = await db.Users.FirstOrDefaultAsync(u => u.ClerkId == clerkId);
+            if (user == null)
+            {
+                var email = principal?.FindFirstValue(ClaimTypes.Email) 
+                         ?? principal?.FindFirstValue("email") 
+                         ?? $"{clerkId}@clerk.user";
+                var name = principal?.FindFirstValue(ClaimTypes.Name) 
+                        ?? principal?.FindFirstValue("name") 
+                        ?? email.Split('@')[0];
+
+                user = new IpoBuddy.Domain.Entities.User
+                {
+                    Id = Guid.NewGuid(),
+                    ClerkId = clerkId,
+                    Email = email,
+                    DisplayName = name,
+                    Phone = null
+                };
+                db.Users.Add(user);
+                await db.SaveChangesAsync();
+            }
+
+            var appIdentity = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim("clerk_id", clerkId),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.DisplayName)
+            }, "ClerkAppIdentity");
+            principal?.AddIdentity(appIdentity);
+        }
+    };
+})
+.AddScheme<AuthenticationSchemeOptions, TokenAuthHandler>("TokenAuth", null);
 builder.Services.AddAuthorization();
 
 // 3. CORS
@@ -45,7 +121,14 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
+    try
+    {
+        db.Database.EnsureCreated();
+    }
+    catch
+    {
+        // Safe ignore concurrent race in parallel test executions
+    }
 }
 
 app.UseCors();

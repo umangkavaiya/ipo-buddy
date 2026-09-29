@@ -1,12 +1,14 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { api, UserProfile } from "@/lib/api";
+import { useUser, useAuth as useClerkAuth, useClerk } from "@clerk/nextjs";
+import { api, UserProfile, setClerkTokenGetter } from "@/lib/api";
 
 interface AuthContextType {
   user: UserProfile | null;
   loading: boolean;
-  login: (phone: string, otp: string) => Promise<void>;
+  isSignedIn: boolean;
+  login: () => void;
   logout: () => void;
   refreshProfile: () => Promise<void>;
 }
@@ -14,44 +16,81 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { isLoaded, isSignedIn, user: clerkUser } = useUser();
+  const { getToken } = useClerkAuth();
+  const { openSignIn, signOut } = useClerk();
+
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Configure api client with Clerk token getter
+  useEffect(() => {
+    if (isSignedIn) {
+      setClerkTokenGetter(() => getToken());
+    } else {
+      setClerkTokenGetter(null);
+    }
+  }, [isSignedIn, getToken]);
+
   const refreshProfile = async () => {
+    if (!isSignedIn) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
     try {
-      const token = localStorage.getItem("ipobuddy_token");
-      if (!token) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
+      setLoading(true);
       const profile = await api.getProfile();
       setUser(profile);
-    } catch {
-      localStorage.removeItem("ipobuddy_token");
-      setUser(null);
+    } catch (err) {
+      console.warn("Could not sync profile with .NET backend yet:", err);
+      // Fallback local representation while backend spins up
+      if (clerkUser) {
+        setUser({
+          id: clerkUser.id,
+          displayName: clerkUser.fullName || clerkUser.primaryEmailAddress?.emailAddress?.split("@")[0] || "Investor",
+          email: clerkUser.primaryEmailAddress?.emailAddress || "",
+          phone: null,
+          subscriptionTier: "FREE",
+        });
+      }
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    refreshProfile();
-  }, []);
+    if (isLoaded) {
+      if (isSignedIn) {
+        refreshProfile();
+      } else {
+        setUser(null);
+        setLoading(false);
+      }
+    }
+  }, [isLoaded, isSignedIn, clerkUser]);
 
-  const login = async (phone: string, otp: string) => {
-    const { token, user: userProfile } = await api.verifyOtp(phone, otp);
-    localStorage.setItem("ipobuddy_token", token);
-    setUser(userProfile);
+  const login = () => {
+    openSignIn();
   };
 
-  const logout = () => {
-    localStorage.removeItem("ipobuddy_token");
+  const logout = async () => {
+    await signOut();
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, refreshProfile }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading: !isLoaded || loading,
+        isSignedIn: !!isSignedIn,
+        login,
+        logout,
+        refreshProfile,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

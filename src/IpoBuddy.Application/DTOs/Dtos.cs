@@ -4,7 +4,7 @@ public record RequestOtpDto(string Phone);
 
 public record VerifyOtpDto(string Phone, string Otp);
 
-public record UserDto(Guid Id, string Phone, string? Email, string DisplayName, string SubscriptionTier);
+public record UserDto(Guid Id, string? Phone, string Email, string DisplayName, string SubscriptionTier);
 
 public record AuthResponseDto(string Token, UserDto User);
 
@@ -37,7 +37,7 @@ public record CreateGroupDto(string Name);
 
 public record JoinGroupDto(string InviteCode);
 
-public record GroupMemberDto(Guid UserId, string DisplayName, string MaskedPhone, string Role);
+public record GroupMemberDto(Guid UserId, string DisplayName, string? MaskedPhone, string? Email, string Role);
 
 public record GroupDto(Guid Id, string Name, string InviteCode, int MaxMembers, int MemberCount, DateTime CreatedAt);
 

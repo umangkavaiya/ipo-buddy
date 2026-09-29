@@ -96,7 +96,8 @@ public static class GroupEndpoints
             var members = g.Members.Select(m => new GroupMemberDto(
                 m.UserId,
                 m.User.DisplayName,
-                m.User.Phone.Length >= 4 ? $"****{m.User.Phone[^4..]}" : m.User.Phone,
+                !string.IsNullOrEmpty(m.User.Phone) && m.User.Phone.Length >= 4 ? $"****{m.User.Phone[^4..]}" : m.User.Phone,
+                m.User.Email,
                 m.Role.ToString()
             )).ToList();
 

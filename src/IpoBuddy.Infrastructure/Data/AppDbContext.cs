@@ -26,7 +26,8 @@ public class AppDbContext : DbContext, IAppDbContext
         // User
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasIndex(u => u.Phone).IsUnique();
+            entity.HasIndex(u => u.ClerkId).IsUnique();
+            entity.HasIndex(u => u.Email).IsUnique();
             entity.Property(u => u.SubscriptionTier).HasConversion<string>();
         });
 

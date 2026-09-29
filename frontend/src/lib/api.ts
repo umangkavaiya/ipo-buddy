@@ -25,8 +25,8 @@ export interface IpoItem {
 
 export interface UserProfile {
   id: string;
-  phone: string;
-  email: string | null;
+  phone: string | null;
+  email: string;
   displayName: string;
   subscriptionTier: string;
 }
@@ -43,7 +43,8 @@ export interface GroupItem {
 export interface GroupMemberItem {
   userId: string;
   displayName: string;
-  phone: string;
+  phone: string | null;
+  email?: string;
   role: string;
 }
 
@@ -89,10 +90,26 @@ export interface TaxCalculationResult {
   netAfterTax: number;
 }
 
-function getAuthHeader(): Record<string, string> {
-  if (typeof window === "undefined") return {};
-  const token = localStorage.getItem("ipobuddy_token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
+let clerkTokenGetter: (() => Promise<string | null>) | null = null;
+
+export function setClerkTokenGetter(getter: (() => Promise<string | null>) | null) {
+  clerkTokenGetter = getter;
+}
+
+async function getAuthHeader(): Promise<Record<string, string>> {
+  if (clerkTokenGetter) {
+    try {
+      const token = await clerkTokenGetter();
+      if (token) return { Authorization: `Bearer ${token}` };
+    } catch {
+      // Fallback
+    }
+  }
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("ipobuddy_token");
+    if (token) return { Authorization: `Bearer ${token}` };
+  }
+  return {};
 }
 
 export const api = {
@@ -144,7 +161,7 @@ export const api = {
 
   async getProfile(): Promise<UserProfile> {
     const res = await fetch(`${API_BASE_URL}/profile`, {
-      headers: { ...getAuthHeader() },
+      headers: { ...(await getAuthHeader()) },
     });
     if (!res.ok) throw new Error("Unauthorized");
     return res.json();
@@ -153,7 +170,7 @@ export const api = {
   // Watchlist
   async getWatchlist(): Promise<IpoItem[]> {
     const res = await fetch(`${API_BASE_URL}/watchlist`, {
-      headers: { ...getAuthHeader() },
+      headers: { ...(await getAuthHeader()) },
     });
     if (!res.ok) return [];
     return res.json();
@@ -162,21 +179,21 @@ export const api = {
   async addToWatchlist(ipoId: string): Promise<void> {
     await fetch(`${API_BASE_URL}/watchlist/${ipoId}`, {
       method: "POST",
-      headers: { ...getAuthHeader() },
+      headers: { ...(await getAuthHeader()) },
     });
   },
 
   async removeFromWatchlist(ipoId: string): Promise<void> {
     await fetch(`${API_BASE_URL}/watchlist/${ipoId}`, {
       method: "DELETE",
-      headers: { ...getAuthHeader() },
+      headers: { ...(await getAuthHeader()) },
     });
   },
 
   // Groups
   async getGroups(): Promise<GroupItem[]> {
     const res = await fetch(`${API_BASE_URL}/groups`, {
-      headers: { ...getAuthHeader() },
+      headers: { ...(await getAuthHeader()) },
     });
     if (!res.ok) return [];
     return res.json();
@@ -184,7 +201,7 @@ export const api = {
 
   async getGroup(id: string): Promise<GroupDetail> {
     const res = await fetch(`${API_BASE_URL}/groups/${id}`, {
-      headers: { ...getAuthHeader() },
+      headers: { ...(await getAuthHeader()) },
     });
     if (!res.ok) throw new Error("Failed to fetch group");
     return res.json();
@@ -193,7 +210,7 @@ export const api = {
   async createGroup(name: string): Promise<GroupItem> {
     const res = await fetch(`${API_BASE_URL}/groups`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", ...getAuthHeader() },
+      headers: { "Content-Type": "application/json", ...(await getAuthHeader()) },
       body: JSON.stringify({ name }),
     });
     if (!res.ok) throw new Error("Failed to create group");
@@ -203,7 +220,7 @@ export const api = {
   async joinGroup(inviteCode: string): Promise<GroupItem> {
     const res = await fetch(`${API_BASE_URL}/groups/join`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", ...getAuthHeader() },
+      headers: { "Content-Type": "application/json", ...(await getAuthHeader()) },
       body: JSON.stringify({ inviteCode }),
     });
     if (!res.ok) {
@@ -216,7 +233,7 @@ export const api = {
   // Splits
   async getSplits(groupId: string): Promise<SplitItem[]> {
     const res = await fetch(`${API_BASE_URL}/groups/${groupId}/splits`, {
-      headers: { ...getAuthHeader() },
+      headers: { ...(await getAuthHeader()) },
     });
     if (!res.ok) return [];
     return res.json();
@@ -225,7 +242,7 @@ export const api = {
   async createSplit(groupId: string, description: string, totalAmount: number): Promise<SplitItem> {
     const res = await fetch(`${API_BASE_URL}/groups/${groupId}/splits`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", ...getAuthHeader() },
+      headers: { "Content-Type": "application/json", ...(await getAuthHeader()) },
       body: JSON.stringify({ description, totalAmount }),
     });
     if (!res.ok) throw new Error("Failed to create split");
@@ -235,7 +252,7 @@ export const api = {
   async toggleSettle(splitId: string, entryId: string): Promise<{ isSettled: boolean; splitStatus: string }> {
     const res = await fetch(`${API_BASE_URL}/splits/${splitId}/settle/${entryId}`, {
       method: "POST",
-      headers: { ...getAuthHeader() },
+      headers: { ...(await getAuthHeader()) },
     });
     if (!res.ok) throw new Error("Failed to toggle settlement");
     return res.json();
@@ -243,7 +260,7 @@ export const api = {
 
   async getBalances(): Promise<NetBalanceItem[]> {
     const res = await fetch(`${API_BASE_URL}/splits/balances`, {
-      headers: { ...getAuthHeader() },
+      headers: { ...(await getAuthHeader()) },
     });
     if (!res.ok) return [];
     return res.json();
