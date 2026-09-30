@@ -16,7 +16,6 @@ import {
   ShieldAlert,
   ArrowRight,
   LogOut,
-  X,
   Percent,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
