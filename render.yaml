@@ -14,3 +14,6 @@ services:
         sync: false # Set in Render dashboard to your Supabase PostgreSQL connection URI
       - key: JWT_SECRET
         generateValue: true
+      - key: Clerk__Issuer
+        value: https://darling-pigeon-465.clerk.accounts.dev
+
