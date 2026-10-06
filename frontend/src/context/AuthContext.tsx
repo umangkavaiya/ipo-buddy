@@ -41,16 +41,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       setLoading(true);
+      const clerkEmail = clerkUser?.primaryEmailAddress?.emailAddress;
+      const clerkFriendlyName =
+        clerkUser?.fullName ||
+        clerkUser?.firstName ||
+        (clerkEmail ? clerkEmail.split("@")[0] : null) ||
+        "Investor";
+
       const profile = await api.getProfile();
-      setUser(profile);
+      const isRawId = !profile.displayName || profile.displayName.startsWith("user_");
+      const cleanDisplayName = isRawId ? clerkFriendlyName : profile.displayName;
+
+      if (isRawId) {
+        api
+          .updateProfile({
+            displayName: cleanDisplayName,
+            email: clerkEmail || undefined,
+          })
+          .catch(() => {});
+      }
+
+      setUser({
+        ...profile,
+        displayName: cleanDisplayName,
+        email: clerkEmail || profile.email,
+      });
     } catch (err) {
       console.warn("Could not sync profile with .NET backend yet:", err);
       // Fallback local representation while backend spins up
       if (clerkUser) {
+        const clerkEmail = clerkUser.primaryEmailAddress?.emailAddress;
+        const clerkFriendlyName =
+          clerkUser.fullName ||
+          clerkUser.firstName ||
+          (clerkEmail ? clerkEmail.split("@")[0] : null) ||
+          "Investor";
+
         setUser({
           id: clerkUser.id,
-          displayName: clerkUser.fullName || clerkUser.primaryEmailAddress?.emailAddress?.split("@")[0] || "Investor",
-          email: clerkUser.primaryEmailAddress?.emailAddress || "",
+          displayName: clerkFriendlyName,
+          email: clerkEmail || "",
           phone: null,
           subscriptionTier: "FREE",
         });

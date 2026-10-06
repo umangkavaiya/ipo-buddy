@@ -168,6 +168,16 @@ export const api = {
     return res.json();
   },
 
+  async updateProfile(data: { displayName?: string; email?: string }): Promise<UserProfile> {
+    const res = await fetch(`${API_BASE_URL}/profile`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", ...(await getAuthHeader()) },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Failed to update profile");
+    return res.json();
+  },
+
   // Watchlist
   async getWatchlist(): Promise<IpoItem[]> {
     const res = await fetch(`${API_BASE_URL}/watchlist`, {

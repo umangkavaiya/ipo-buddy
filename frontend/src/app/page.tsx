@@ -237,11 +237,8 @@ export default function Home() {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold tracking-tight text-white">IPO Buddy</h1>
-              <span className="text-xs bg-emerald-500/10 text-emerald-400 font-semibold px-2 py-0.5 rounded-full border border-emerald-500/20">
-                .NET 10 API
-              </span>
             </div>
-            <p className="text-xs text-slate-400">Zero-Cost Indian IPO Tracker & Group Splits</p>
+            <p className="text-xs text-slate-400">Indian IPO Intelligence & Syndicate Tracker</p>
           </div>
         </div>
 
@@ -257,11 +254,28 @@ export default function Home() {
           </button>
 
           {user ? (
-            <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg p-1.5 pl-3">
-              <span className="text-xs font-semibold text-slate-200">{user.displayName}</span>
+            <div className="flex items-center gap-2.5 bg-slate-900 border border-slate-800 rounded-lg p-1.5 pl-2.5 pr-2">
+              <div className="h-7 w-7 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold uppercase shrink-0">
+                {(user.displayName?.startsWith("user_")
+                  ? (user.email ? user.email.charAt(0) : "I")
+                  : (user.displayName?.charAt(0) || "I")
+                ).toUpperCase()}
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="text-xs font-semibold text-slate-200 leading-tight">
+                  {user.displayName?.startsWith("user_")
+                    ? (user.email && !user.email.endsWith("@clerk.user") ? user.email.split("@")[0] : "Investor")
+                    : (user.displayName || "Investor")}
+                </span>
+                {user.email && !user.email.endsWith("@clerk.user") && (
+                  <span className="text-[10px] text-slate-400 leading-tight truncate max-w-[150px]">
+                    {user.email}
+                  </span>
+                )}
+              </div>
               <button
                 onClick={logout}
-                className="min-h-[36px] min-w-[36px] flex items-center justify-center rounded-md hover:bg-slate-800 text-slate-400 hover:text-rose-400 transition-colors"
+                className="ml-1 min-h-[32px] min-w-[32px] flex items-center justify-center rounded-md hover:bg-slate-800 text-slate-400 hover:text-rose-400 transition-colors"
                 title="Log out"
               >
                 <LogOut className="h-3.5 w-3.5" />

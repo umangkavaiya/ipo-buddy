@@ -75,6 +75,11 @@ builder.Services.AddAuthentication(options =>
                         ?? principal?.FindFirstValue("name") 
                         ?? email.Split('@')[0];
 
+                if (string.IsNullOrWhiteSpace(name) || name.StartsWith("user_"))
+                {
+                    name = "Investor";
+                }
+
                 user = new IpoBuddy.Domain.Entities.User
                 {
                     Id = Guid.NewGuid(),
@@ -84,6 +89,14 @@ builder.Services.AddAuthentication(options =>
                     Phone = null
                 };
                 db.Users.Add(user);
+                await db.SaveChangesAsync();
+            }
+            else if (user.DisplayName.StartsWith("user_"))
+            {
+                var name = principal?.FindFirstValue(ClaimTypes.Name) ?? principal?.FindFirstValue("name");
+                user.DisplayName = !string.IsNullOrWhiteSpace(name) && !name.StartsWith("user_")
+                    ? name
+                    : (!string.IsNullOrWhiteSpace(user.Email) && !user.Email.StartsWith("user_") ? user.Email.Split('@')[0] : "Investor");
                 await db.SaveChangesAsync();
             }
 
