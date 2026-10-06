@@ -35,3 +35,5 @@ appsettings.Local.json
 *.log
 .pytest_cache/
 TestResults/
+.playwright-cli/
+scratch/
