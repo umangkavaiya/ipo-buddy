@@ -1,15 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #020617;
-  --foreground: #f8fafc;
-  --brand-navy: #0a2540;
-  --brand-primary: #000f22;
-  --brand-emerald: #059669;
-  --brand-accent: #2ecc71;
-  --brand-surface: #0f172a;
-  --brand-card: #1e293b;
-  --brand-border: #334155;
+  --background: #f7f9fb;
+  --foreground: #191c1e;
+  --primary: #000f22;
+  --primary-container: #0a2540;
+  --secondary: #006d37;
+  --secondary-container: #2ecc71;
+  --surface: #f7f9fb;
+  --surface-container: #eceef0;
+  --surface-container-high: #e6e8ea;
+  --surface-container-lowest: #ffffff;
+  --outline: #74777e;
+  --outline-variant: #e2e8f0;
+  --error: #ba1a1a;
 }
 
 @theme inline {
@@ -20,7 +24,7 @@
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
@@ -29,6 +33,10 @@ body {
 .font-data-tabular {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
+}
+
+.card-shadow {
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05), 0px 10px 15px -3px rgba(0, 0, 0, 0.02);
 }
 
 .no-scrollbar::-webkit-scrollbar {

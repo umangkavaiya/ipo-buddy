@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-        <body className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans antialiased selection:bg-emerald-500 selection:text-white">
+        <body className="min-h-screen bg-[#f7f9fb] text-slate-900 flex flex-col font-sans antialiased selection:bg-emerald-600 selection:text-white">
           <AuthProvider>
             {children}
           </AuthProvider>
