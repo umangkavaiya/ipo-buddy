@@ -1,3 +1,6 @@
+using System.Globalization;
+using System.Reflection;
+using System.Text.Json;
 using IpoBuddy.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,8 +12,16 @@ public static class DbInitializer
     {
         if (await db.Ipos.AnyAsync()) return;
 
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var verifiedList = LoadVerifiedIposFromEmbeddedJson();
+        if (verifiedList.Count > 0)
+        {
+            await db.Ipos.AddRangeAsync(verifiedList);
+            await db.SaveChangesAsync();
+            return;
+        }
 
+        // Hardcoded safety net fallback
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var ipos = new List<Ipo>
         {
             new()
@@ -78,80 +89,102 @@ public static class DbInitializer
                 RegistrarName = "KFin Technologies Ltd",
                 RegistrarUrl = "https://kosmic.kfintech.com/ipostatus",
                 SubscriptionDataJson = "{}"
-            },
-            new()
-            {
-                Id = Guid.NewGuid(),
-                CompanyName = "Bajaj Housing Finance Ltd",
-                Symbol = "BAJAJHFL",
-                Exchange = "NSE/BSE",
-                Category = IpoCategory.Mainboard,
-                Status = IpoStatus.Listed,
-                IssuePriceLow = 66.00m,
-                IssuePriceHigh = 70.00m,
-                LotSize = 214,
-                MinInvestment = 14980.00m,
-                OpenDate = today.AddDays(-20),
-                CloseDate = today.AddDays(-17),
-                AllotmentDate = today.AddDays(-15),
-                ListingDate = today.AddDays(-12),
-                ListingPrice = 150.00m,
-                ListingGainPct = 114.28m,
-                Gmp = 82.00m,
-                GmpUpdatedAt = DateTime.UtcNow,
-                RegistrarName = "KFin Technologies Ltd",
-                RegistrarUrl = "https://kosmic.kfintech.com/ipostatus",
-                SubscriptionDataJson = "{\"overall\": 67.4, \"retail\": 7.0, \"qib\": 222.0, \"nii\": 43.5}"
-            },
-            new()
-            {
-                Id = Guid.NewGuid(),
-                CompanyName = "Diffusor Precision Engineering Ltd",
-                Symbol = "DIFFUSOR",
-                Exchange = "BSE SME",
-                Category = IpoCategory.Sme,
-                Status = IpoStatus.Open,
-                IssuePriceLow = 100.00m,
-                IssuePriceHigh = 105.00m,
-                LotSize = 1200,
-                MinInvestment = 126000.00m,
-                OpenDate = today.AddDays(-2),
-                CloseDate = today.AddDays(1),
-                AllotmentDate = today.AddDays(3),
-                ListingDate = today.AddDays(6),
-                Gmp = 45.00m,
-                GmpUpdatedAt = DateTime.UtcNow,
-                RegistrarName = "Maashitla Securities Pvt Ltd",
-                RegistrarUrl = "https://maashitla.com/allotment-status",
-                SubscriptionDataJson = "{\"overall\": 14.8, \"retail\": 18.2, \"nii\": 11.4}"
-            },
-            new()
-            {
-                Id = Guid.NewGuid(),
-                CompanyName = "Northern Arc Capital Ltd",
-                Symbol = "NORTHARC",
-                Exchange = "NSE/BSE",
-                Category = IpoCategory.Mainboard,
-                Status = IpoStatus.Listed,
-                IssuePriceLow = 249.00m,
-                IssuePriceHigh = 263.00m,
-                LotSize = 57,
-                MinInvestment = 14991.00m,
-                OpenDate = today.AddDays(-14),
-                CloseDate = today.AddDays(-11),
-                AllotmentDate = today.AddDays(-9),
-                ListingDate = today.AddDays(-6),
-                ListingPrice = 351.00m,
-                ListingGainPct = 33.46m,
-                Gmp = 128.00m,
-                GmpUpdatedAt = DateTime.UtcNow,
-                RegistrarName = "KFin Technologies Ltd",
-                RegistrarUrl = "https://kosmic.kfintech.com/ipostatus",
-                SubscriptionDataJson = "{\"overall\": 117.2, \"retail\": 32.0, \"qib\": 241.0, \"nii\": 148.0}"
             }
         };
 
-        db.Ipos.AddRange(ipos);
+        await db.Ipos.AddRangeAsync(ipos);
         await db.SaveChangesAsync();
+    }
+
+    public static List<Ipo> LoadVerifiedIposFromEmbeddedJson()
+    {
+        var assembly = typeof(DbInitializer).Assembly;
+        using var stream = assembly.GetManifestResourceStream("IpoBuddy.Infrastructure.Data.verified_ipos.json");
+        if (stream == null) return new List<Ipo>();
+
+        using var reader = new StreamReader(stream);
+        var json = reader.ReadToEnd();
+        using var doc = JsonDocument.Parse(json);
+        var list = new List<Ipo>();
+
+        foreach (var elem in doc.RootElement.EnumerateArray())
+        {
+            try
+            {
+                var idStr = elem.GetProperty("Id").GetString();
+                var id = Guid.TryParse(idStr, out var gid) ? gid : Guid.NewGuid();
+                var name = elem.GetProperty("CompanyName").GetString() ?? "";
+                if (string.IsNullOrWhiteSpace(name)) continue;
+
+                var symbol = elem.TryGetProperty("Symbol", out var sym) && sym.ValueKind == JsonValueKind.String ? sym.GetString() : null;
+                var exchange = elem.TryGetProperty("Exchange", out var ex) && ex.ValueKind == JsonValueKind.String ? ex.GetString() ?? "NSE/BSE" : "NSE/BSE";
+
+                var catStr = elem.TryGetProperty("Category", out var cat) ? cat.GetString() : "Mainboard";
+                var category = Enum.TryParse<IpoCategory>(catStr, true, out var parsedCat) ? parsedCat : IpoCategory.Mainboard;
+
+                var statusStr = elem.TryGetProperty("Status", out var stat) ? stat.GetString() : "Open";
+                var status = Enum.TryParse<IpoStatus>(statusStr, true, out var parsedStat) ? parsedStat : IpoStatus.Open;
+
+                decimal? priceLow = ParseDecimal(elem, "IssuePriceLow");
+                decimal? priceHigh = ParseDecimal(elem, "IssuePriceHigh");
+                int lotSize = elem.TryGetProperty("LotSize", out var lot) && lot.TryGetInt32(out var l) ? l : 1;
+                decimal? minInvest = ParseDecimal(elem, "MinInvestment");
+
+                DateOnly? openDate = ParseDate(elem, "OpenDate");
+                DateOnly? closeDate = ParseDate(elem, "CloseDate");
+                DateOnly? allotmentDate = ParseDate(elem, "AllotmentDate");
+                DateOnly? listingDate = ParseDate(elem, "ListingDate");
+
+                decimal? gmp = ParseDecimal(elem, "Gmp");
+                var subJson = elem.TryGetProperty("SubscriptionDataJson", out var sub) && sub.ValueKind == JsonValueKind.String ? sub.GetString() ?? "{}" : "{}";
+                var regName = elem.TryGetProperty("RegistrarName", out var rn) && rn.ValueKind == JsonValueKind.String ? rn.GetString() ?? "" : "";
+                var regUrl = elem.TryGetProperty("RegistrarUrl", out var ru) && ru.ValueKind == JsonValueKind.String ? ru.GetString() ?? "" : "";
+
+                list.Add(new Ipo
+                {
+                    Id = id,
+                    CompanyName = name,
+                    Symbol = symbol,
+                    Exchange = exchange,
+                    Category = category,
+                    Status = status,
+                    IssuePriceLow = priceLow,
+                    IssuePriceHigh = priceHigh,
+                    LotSize = lotSize,
+                    MinInvestment = minInvest,
+                    OpenDate = openDate,
+                    CloseDate = closeDate,
+                    AllotmentDate = allotmentDate,
+                    ListingDate = listingDate,
+                    Gmp = gmp,
+                    SubscriptionDataJson = subJson,
+                    RegistrarName = regName,
+                    RegistrarUrl = regUrl,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                });
+            }
+            catch
+            {
+                // Ignore any malformed entry
+            }
+        }
+
+        return list;
+    }
+
+    private static decimal? ParseDecimal(JsonElement elem, string propName)
+    {
+        if (!elem.TryGetProperty(propName, out var prop) || prop.ValueKind == JsonValueKind.Null) return null;
+        if (prop.ValueKind == JsonValueKind.Number && prop.TryGetDecimal(out var d)) return d;
+        if (prop.ValueKind == JsonValueKind.String && decimal.TryParse(prop.GetString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var ds)) return ds;
+        return null;
+    }
+
+    private static DateOnly? ParseDate(JsonElement elem, string propName)
+    {
+        if (!elem.TryGetProperty(propName, out var prop) || prop.ValueKind == JsonValueKind.Null) return null;
+        if (prop.ValueKind == JsonValueKind.String && DateOnly.TryParse(prop.GetString(), CultureInfo.InvariantCulture, out var dt)) return dt;
+        return null;
     }
 }

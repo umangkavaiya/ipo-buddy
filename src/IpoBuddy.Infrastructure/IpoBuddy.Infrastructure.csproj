@@ -1,8 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\IpoBuddy.Domain\IpoBuddy.Domain.csproj" />
     <ProjectReference Include="..\IpoBuddy.Application\IpoBuddy.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Data\verified_ipos.json" />
   </ItemGroup>
 
   <ItemGroup>
