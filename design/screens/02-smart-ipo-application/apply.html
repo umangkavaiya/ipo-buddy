@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IPO Application</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#38485d",
+                      "on-primary": "#ffffff",
+                      "surface-container": "#eceef0",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-high": "#e6e8ea",
+                      "tertiary-fixed-dim": "#b7c8e1",
+                      "surface-tint": "#49607e",
+                      "primary": "#000f22",
+                      "on-tertiary-container": "#7c8ca4",
+                      "tertiary-fixed": "#d3e4fe",
+                      "surface-variant": "#e0e3e5",
+                      "on-primary-fixed": "#001c37",
+                      "surface-container-lowest": "#ffffff",
+                      "on-background": "#191c1e",
+                      "inverse-surface": "#2d3133",
+                      "surface-dim": "#d8dadc",
+                      "on-primary-container": "#768dad",
+                      "on-tertiary-fixed": "#0b1c30",
+                      "tertiary-container": "#142538",
+                      "on-secondary-fixed-variant": "#005228",
+                      "outline-variant": "#c4c6ce",
+                      "on-surface": "#191c1e",
+                      "secondary-fixed": "#6bfe9c",
+                      "surface": "#f7f9fb",
+                      "primary-fixed-dim": "#b0c8eb",
+                      "on-secondary-fixed": "#00210c",
+                      "surface-container-highest": "#e0e3e5",
+                      "inverse-primary": "#b0c8eb",
+                      "secondary-fixed-dim": "#4ae183",
+                      "tertiary": "#000f22",
+                      "on-error-container": "#93000a",
+                      "surface-container-low": "#f2f4f6",
+                      "secondary": "#006d37",
+                      "surface-bright": "#f7f9fb",
+                      "primary-container": "#0a2540",
+                      "background": "#f7f9fb",
+                      "primary-fixed": "#d2e4ff",
+                      "on-error": "#ffffff",
+                      "error": "#ba1a1a",
+                      "secondary-container": "#6bfe9c",
+                      "inverse-on-surface": "#eff1f3",
+                      "error-container": "#ffdad6",
+                      "outline": "#74777e",
+                      "on-secondary-container": "#00743a",
+                      "on-primary-fixed-variant": "#314865",
+                      "on-surface-variant": "#43474d"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "container-max": "1280px",
+                      "stack-lg": "32px",
+                      "gutter": "24px",
+                      "base": "4px",
+                      "stack-sm": "8px",
+                      "stack-md": "16px",
+                      "margin-desktop": "40px",
+                      "margin-mobile": "16px"
+              },
+              "fontFamily": {
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "data-tabular": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "headline-sm": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "label-caps": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "data-tabular": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-sm": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-surface font-body-lg antialiased">
+<!-- TopNavBar -->
+<nav class="docked full-width top-0 sticky z-40 bg-surface-container-lowest dark:bg-primary-container shadow-sm">
+<div class="flex justify-between items-center w-full px-margin-desktop py-stack-md max-w-container-max mx-auto">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed">IPO Manager</span>
+</div>
+<div class="flex items-center gap-6">
+<!-- Search on left -->
+<div class="relative hidden md:block text-on-surface-variant">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[20px]">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-body-md font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 w-64 transition-all" placeholder="Search IPOs..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed-dim transition-colors relative" data-icon="notifications">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" data-icon="settings">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="bg-primary text-on-primary px-4 py-2 rounded font-body-md text-body-md hover:bg-primary/90 transition-colors hidden md:block">Add Funds</button>
+<img alt="User profile" class="w-8 h-8 rounded-full border border-outline-variant object-cover" data-alt="A small, circular avatar portrait of an individual in professional attire, set against a solid, light blue background. The lighting is soft and even, suggesting a high-quality studio headshot intended for a modern corporate application. The colors are muted but distinct, fitting a light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCanWx-I51ou7dKpSKh6aoup7OjI4DYRR-zIL7VBIdQ9gcjG6qgt-4qy-XuHN_3wTfOzj0HpmzFASMXKtPcSDFrurcnEniQQ57wpOTDprR5opcXjpKcjMwdEdo5hAhcRzPUrMnl2gn90vtjofdd65SGwgmL8SLSQbZwcaaSKpPhilhfLB8T17N7a5nyoIGA1Jx4mw1oOyax40XlkqGFgm1sYY9pCbgz_TIw1EdagwQXpsyy6E8y8sHXQ"/>
+</div>
+</div>
+</div>
+</nav>
+<div class="flex h-[calc(100vh-73px)]">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-full border-r border-outline-variant dark:border-outline w-64 flex-shrink-0 bg-surface dark:bg-inverse-surface">
+<div class="p-6 border-b border-outline-variant/50">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined">account_balance</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed leading-tight">Capital Flow</h2>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Institutional Managed</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 py-4">
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+                            Dashboard
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[20px]">account_balance</span>
+                            Linked Accounts
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-primary dark:text-primary-fixed font-bold border-r-4 border-primary hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors opacity-90 font-body-md text-body-md bg-surface-container-lowest" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+                            Active IPOs
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[20px]">history_edu</span>
+                            Allocation History
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+                            Wallets
+                        </a>
+</li>
+</ul>
+</nav>
+<div class="p-6 border-t border-outline-variant/50">
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-primary font-body-md text-body-md transition-colors w-full">
+<span class="material-symbols-outlined text-[20px]">help</span>
+                    Support
+                </button>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto bg-surface-container-low px-margin-mobile md:px-margin-desktop py-stack-lg">
+<div class="max-w-4xl mx-auto space-y-stack-lg">
+<!-- Back Link -->
+<a class="inline-flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md mb-4" href="#">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                    Back to Active IPOs
+                </a>
+<!-- IPO Details Header Card -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-sm border border-outline-variant/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+<div class="flex items-center gap-6">
+<div class="w-20 h-20 rounded-lg bg-surface border border-outline-variant/50 flex items-center justify-center p-2 flex-shrink-0">
+<img alt="TechNova Solutions Logo" class="w-full h-full object-contain" data-alt="A stylized, modern, minimalist logo for a technology company, featuring interlocking abstract geometric shapes in dark navy blue and white. The background is a stark, clean white, emphasizing the crisp edges and professional, corporate aesthetic suitable for a high-stakes financial platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpLrTXC_cTM0w4oadu4bE4WLiZdcngXavHfZO1s0N-j6Vbl01PXi8xQpvDYl0mI6Rez3Ae59zCjy8fJqOxN1wEcZp795vHXO0ugCryPRR32L8w8sggf_XUdpEbaNBt1_yvn1Nw57TjeMMmWjTk_GFWoPIGz8dDmeAWiZ_rTRRVpuV0VXs_l86IEPmvvDiYaHwX2cahFlN_MScAP8V3xySjzkmHk0iyqpbADMsgkz-UXFsisxZ-8DcWgw"/>
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h1 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">TechNova Solutions</h1>
+<span class="bg-secondary/10 text-secondary font-label-caps text-label-caps px-2 py-1 rounded">OPEN</span>
+</div>
+<p class="text-on-surface-variant font-body-lg mb-4">Technology • Software Infrastructure</p>
+<div class="flex gap-8">
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">PRICE BAND</p>
+<p class="font-data-tabular text-data-tabular text-primary text-lg">₹500 - ₹510</p>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">LOT SIZE</p>
+<p class="font-data-tabular text-data-tabular text-primary text-lg">30 Shares</p>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">MIN INVESTMENT</p>
+<p class="font-data-tabular text-data-tabular text-primary text-lg">₹15,000</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Application Section -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Left Col: Form -->
+<div class="md:col-span-7 space-y-6">
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/30">
+<h2 class="font-headline-sm text-headline-sm text-primary mb-6">Capital Deployment Setup</h2>
+<div class="space-y-6">
+<div>
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2">TOTAL CAPITAL TO DEPLOY</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 font-data-tabular text-data-tabular text-on-surface-variant">₹</span>
+<input class="w-full pl-8 pr-4 py-3 bg-surface border border-outline-variant rounded-lg font-data-tabular text-data-tabular text-lg text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all" type="text" value="300,000"/>
+</div>
+<p class="text-body-md font-body-md text-on-surface-variant mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">info</span>
+                                        Available in master wallet: ₹1,250,000
+                                    </p>
+</div>
+<div class="pt-4 border-t border-outline-variant/30">
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-4">BID PRICE SELECTION</label>
+<div class="grid grid-cols-2 gap-4">
+<label class="relative flex cursor-pointer rounded-lg border border-primary bg-primary/5 p-4 focus:outline-none">
+<input checked="" class="sr-only" name="bid_price" type="radio"/>
+<div class="flex w-full items-center justify-between">
+<div class="flex flex-col">
+<span class="font-body-lg text-body-lg text-primary font-medium">Cut-off Price</span>
+<span class="font-data-tabular text-data-tabular text-on-surface-variant">₹510.00</span>
+</div>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</label>
+<label class="relative flex cursor-pointer rounded-lg border border-outline-variant bg-surface p-4 hover:bg-surface-container-low transition-colors">
+<input class="sr-only" name="bid_price" type="radio"/>
+<div class="flex w-full items-center justify-between">
+<div class="flex flex-col">
+<span class="font-body-lg text-body-lg text-on-surface">Custom Price</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Enter manually</span>
+</div>
+</div>
+</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Col: Smart Split Preview -->
+<div class="md:col-span-5 space-y-6">
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/30 sticky top-24">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">Smart Split Preview</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">Algorithmically distributing capital to maximize allotment probability.</p>
+<div class="bg-surface rounded-lg p-4 mb-6 border border-outline-variant/20">
+<div class="flex justify-between items-center mb-2">
+<span class="font-body-md text-body-md text-on-surface-variant">Target Lots</span>
+<span class="font-data-tabular text-data-tabular font-medium">19 Lots</span>
+</div>
+<div class="flex justify-between items-center mb-2">
+<span class="font-body-md text-body-md text-on-surface-variant">Accounts Utilized</span>
+<span class="font-data-tabular text-data-tabular font-medium">6 Accounts</span>
+</div>
+<div class="w-full h-2 bg-surface-container-high rounded-full mt-4 overflow-hidden">
+<div class="h-full bg-primary w-[85%] rounded-full"></div>
+</div>
+<p class="text-right font-label-caps text-label-caps text-on-surface-variant mt-2">85% of target deployed</p>
+</div>
+<div class="space-y-3 mb-8 max-h-[200px] overflow-y-auto pr-2">
+<!-- Account Row -->
+<div class="flex justify-between items-center p-3 hover:bg-surface rounded-md transition-colors border-b border-outline-variant/10 last:border-0">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-label-caps text-[10px]">A1</div>
+<div>
+<p class="font-body-md text-body-md font-medium text-primary">Retail Acct 01</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">3 Lots • ₹45,900</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary text-[18px]">check</span>
+</div>
+<!-- Account Row -->
+<div class="flex justify-between items-center p-3 hover:bg-surface rounded-md transition-colors border-b border-outline-variant/10 last:border-0">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-label-caps text-[10px]">A2</div>
+<div>
+<p class="font-body-md text-body-md font-medium text-primary">Retail Acct 02</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">4 Lots • ₹61,200</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary text-[18px]">check</span>
+</div>
+<!-- Account Row -->
+<div class="flex justify-between items-center p-3 hover:bg-surface rounded-md transition-colors border-b border-outline-variant/10 last:border-0">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-label-caps text-[10px]">A3</div>
+<div>
+<p class="font-body-md text-body-md font-medium text-primary">HNI Acct 01</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">10 Lots • ₹153,000</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary text-[18px]">check</span>
+</div>
+<!-- Account Row -->
+<div class="flex justify-between items-center p-3 hover:bg-surface rounded-md transition-colors border-b border-outline-variant/10 last:border-0">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-label-caps text-[10px]">A4</div>
+<div>
+<p class="font-body-md text-body-md font-medium text-primary">Retail Acct 04</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">2 Lots • ₹30,600</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary text-[18px]">check</span>
+</div>
+</div>
+<button class="w-full bg-secondary hover:bg-secondary/90 text-on-secondary font-body-lg text-body-lg font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[20px]">send</span>
+                                Confirm &amp; Apply across 6 accounts
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

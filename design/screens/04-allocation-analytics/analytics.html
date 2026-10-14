@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Allocation History - Capital Flow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#e6e8ea",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "surface-tint": "#49607e",
+                        "primary": "#000f22",
+                        "on-tertiary-container": "#7c8ca4",
+                        "tertiary-fixed": "#d3e4fe",
+                        "surface-variant": "#e0e3e5",
+                        "on-primary-fixed": "#001c37",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#191c1e",
+                        "inverse-surface": "#2d3133",
+                        "surface-dim": "#d8dadc",
+                        "on-primary-container": "#768dad",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "tertiary-container": "#142538",
+                        "on-secondary-fixed-variant": "#005228",
+                        "outline-variant": "#c4c6ce",
+                        "on-surface": "#191c1e",
+                        "secondary-fixed": "#6bfe9c",
+                        "surface": "#f7f9fb",
+                        "primary-fixed-dim": "#b0c8eb",
+                        "on-secondary-fixed": "#00210c",
+                        "surface-container-highest": "#e0e3e5",
+                        "inverse-primary": "#b0c8eb",
+                        "secondary-fixed-dim": "#4ae183",
+                        "tertiary": "#000f22",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary": "#006d37",
+                        "surface-bright": "#f7f9fb",
+                        "primary-container": "#0a2540",
+                        "background": "#f7f9fb",
+                        "primary-fixed": "#d2e4ff",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#6bfe9c",
+                        "inverse-on-surface": "#eff1f3",
+                        "error-container": "#ffdad6",
+                        "outline": "#74777e",
+                        "on-secondary-container": "#00743a",
+                        "on-primary-fixed-variant": "#314865",
+                        "on-surface-variant": "#43474d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "stack-lg": "32px",
+                        "gutter": "24px",
+                        "base": "4px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "margin-desktop": "40px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "data-tabular": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .card-shadow { box-shadow: 0px 1px 3px rgba(0,0,0,0.05), 0px 10px 15px -3px rgba(0,0,0,0.02); }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface dark:bg-inverse-surface border-r border-outline-variant dark:border-outline z-50">
+<div class="p-gutter">
+<div class="flex items-center gap-stack-sm mb-stack-md">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A minimalist, highly detailed corporate logo for an institutional finance firm named Capital Flow, set against a pristine white background with sharp, precise geometric shapes and deep navy blue accents, evoking trust, security, and high-tech efficiency in a bright light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCCtxqA1w-unufZud9Ao4bzbSgf_UlwTCftRGIJMJ9JRu_0Af20BdJuhOXr-inFk2Vf6u4Ot_mhtutmODjwKu0RJ4Le8YZRh7y_TFr8mVpUBPkKySd-QhKHCFc7DOPNm1c0gNnFJ1Q8BesdNo2NFQH1N5bMPzlvCX9O3TPwyFvu-eT6ry-rwYBUFefm3JN5cexpQGz1gIziRvuqPMgb9Q2z-c8iZys6WNI5Rfk_q8L9tYbkyZVc8V9oA"/>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed">Capital Flow</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Institutional Managed</p>
+</div>
+</div>
+</div>
+<ul class="flex-1 px-stack-sm space-y-base overflow-y-auto">
+<li>
+<a class="flex items-center gap-stack-md px-stack-md py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-stack-md px-stack-md py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+                    Linked Accounts
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-stack-md px-stack-md py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="rocket_launch">rocket_launch</span>
+                    Active IPOs
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-stack-md px-stack-md py-3 rounded-lg bg-surface-container-low text-primary dark:text-primary-fixed font-bold border-r-4 border-primary opacity-90 transition-all font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+                    Allocation History
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-stack-md px-stack-md py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+                    Wallets
+                </a>
+</li>
+</ul>
+<div class="p-gutter mt-auto">
+<button class="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-outline-variant text-primary hover:bg-surface-container-low transition-colors font-data-tabular text-data-tabular">
+<span class="material-symbols-outlined text-sm" data-icon="support_agent">support_agent</span>
+                Support
+            </button>
+</div>
+</nav>
+<!-- TopNavBar Mobile -->
+<header class="md:hidden flex justify-between items-center w-full px-margin-mobile py-stack-md docked full-width top-0 sticky z-40 bg-surface-container-lowest dark:bg-primary-container shadow-sm">
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed">IPO Manager</h1>
+<div class="flex items-center gap-stack-md">
+<button class="text-primary dark:text-primary-fixed hover:text-primary dark:hover:text-primary-fixed-dim transition-transform active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-primary dark:text-primary-fixed hover:text-primary dark:hover:text-primary-fixed-dim transition-transform active:scale-95">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 md:ml-64 p-margin-mobile md:p-margin-desktop max-w-container-max mx-auto w-full">
+<header class="mb-stack-lg flex flex-col md:flex-row md:items-end justify-between gap-stack-md">
+<div>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">Allocation History</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Review past commitments and allocation outcomes.</p>
+</div>
+<!-- Top Nav Desktop Trailing Actions (Moved to page header context) -->
+<div class="hidden md:flex items-center gap-stack-md">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 font-body-md text-body-md w-64" placeholder="Search IPOs..." type="text"/>
+</div>
+<button class="px-6 py-2 bg-primary text-on-primary rounded-lg font-data-tabular text-data-tabular hover:bg-primary/90 transition-colors">Add Funds</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A highly detailed close-up portrait of a professional corporate finance manager in a bright, modern office setting. The lighting is crisp and clear, creating a clean light-mode aesthetic with soft shadows. The person exudes calm authority and confidence, perfectly suited for an institutional IPO platform avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRvaHiLaTT3Wiz2ssSYbq4XPlBzx0EywQpYSj9N7aiKHy-zbFgBO5R04ksfMIr8Ca-EDayDJaX-GtY518KMpBJYWOHDx4ZPaPEHREII4z2KWiHeyNlsSfE-7eciqswEGb8PAePe22heKfkEW4C6XszoBWQue29qCdKQuUltmtkx7Qnq0hOoksrPf0JBaoosMEws1EpKaABPn-3X2cs6a6peH_uFBUEv4cW9mAR6XogvKHHg3_3Q6CTLg"/>
+</div>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Filters & Table (Spans 9 cols on desktop) -->
+<div class="lg:col-span-9 flex flex-col gap-stack-lg">
+<!-- Filter Bar (Bento-style row) -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-md card-shadow flex flex-wrap items-center gap-stack-md">
+<div class="flex items-center gap-2 mr-auto">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="filter_list">filter_list</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">FILTERS</span>
+</div>
+<div class="flex flex-wrap gap-stack-sm">
+<select class="appearance-none bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2 pr-8 font-data-tabular text-data-tabular focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
+<option>All Years</option>
+<option>2024</option>
+<option>2023</option>
+</select>
+<select class="appearance-none bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2 pr-8 font-data-tabular text-data-tabular focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
+<option>All Statuses</option>
+<option>Allocated</option>
+<option>Not Allocated</option>
+<option>Pending</option>
+</select>
+<select class="appearance-none bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2 pr-8 font-data-tabular text-data-tabular focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10">
+<option>All Accounts</option>
+<option>Inst. Primary</option>
+<option>HNI Basket A</option>
+</select>
+</div>
+</div>
+<!-- Main Data Table Card -->
+<div class="bg-surface-container-lowest rounded-xl card-shadow overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-surface-variant bg-surface-bright">
+<th class="p-stack-md font-label-caps text-label-caps text-on-surface-variant whitespace-nowrap">IPO NAME</th>
+<th class="p-stack-md font-label-caps text-label-caps text-on-surface-variant whitespace-nowrap">DATE</th>
+<th class="p-stack-md font-label-caps text-label-caps text-on-surface-variant whitespace-nowrap text-right">AMOUNT BLOCKED</th>
+<th class="p-stack-md font-label-caps text-label-caps text-on-surface-variant whitespace-nowrap text-center">ACCOUNTS</th>
+<th class="p-stack-md font-label-caps text-label-caps text-on-surface-variant whitespace-nowrap">STATUS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-variant font-data-tabular text-data-tabular text-on-surface">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="p-stack-md">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">AI</div>
+<div>
+<div class="font-semibold">Aura Intelligence</div>
+<div class="text-xs text-on-surface-variant font-body-md">Technology</div>
+</div>
+</div>
+</td>
+<td class="p-stack-md text-on-surface-variant">Oct 12, 2024</td>
+<td class="p-stack-md text-right font-semibold">$2,500,000</td>
+<td class="p-stack-md text-center">3</td>
+<td class="p-stack-md">
+<span class="inline-flex items-center px-2 py-1 rounded bg-secondary/10 text-secondary font-label-caps text-label-caps">Allocated</span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="p-stack-md">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">NX</div>
+<div>
+<div class="font-semibold">Nexus Energy</div>
+<div class="text-xs text-on-surface-variant font-body-md">Infrastructure</div>
+</div>
+</div>
+</td>
+<td class="p-stack-md text-on-surface-variant">Sep 28, 2024</td>
+<td class="p-stack-md text-right font-semibold">$1,200,000</td>
+<td class="p-stack-md text-center">1</td>
+<td class="p-stack-md">
+<span class="inline-flex items-center px-2 py-1 rounded bg-error/10 text-error font-label-caps text-label-caps">Not Allocated</span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="p-stack-md">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">VX</div>
+<div>
+<div class="font-semibold">Vanguard Bio</div>
+<div class="text-xs text-on-surface-variant font-body-md">Healthcare</div>
+</div>
+</div>
+</td>
+<td class="p-stack-md text-on-surface-variant">Aug 15, 2024</td>
+<td class="p-stack-md text-right font-semibold">$4,800,000</td>
+<td class="p-stack-md text-center">5</td>
+<td class="p-stack-md">
+<span class="inline-flex items-center px-2 py-1 rounded bg-secondary/10 text-secondary font-label-caps text-label-caps">Allocated</span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="p-stack-md">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">QD</div>
+<div>
+<div class="font-semibold">Quantum Data</div>
+<div class="text-xs text-on-surface-variant font-body-md">Enterprise SaaS</div>
+</div>
+</div>
+</td>
+<td class="p-stack-md text-on-surface-variant">Jul 02, 2024</td>
+<td class="p-stack-md text-right font-semibold">$850,000</td>
+<td class="p-stack-md text-center">2</td>
+<td class="p-stack-md">
+<span class="inline-flex items-center px-2 py-1 rounded bg-surface-dim text-on-surface font-label-caps text-label-caps">Pending</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-surface-variant flex justify-between items-center bg-surface-bright">
+<span class="font-body-md text-body-md text-on-surface-variant">Showing 4 of 24 records</span>
+<div class="flex gap-2">
+<button class="px-3 py-1 border border-outline-variant rounded hover:bg-surface-container-low font-data-tabular text-sm">Prev</button>
+<button class="px-3 py-1 bg-primary text-on-primary rounded font-data-tabular text-sm">Next</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Success Metrics (Spans 3 cols on desktop) -->
+<div class="lg:col-span-3 flex flex-col gap-stack-md">
+<div class="bg-primary-container text-on-primary-container rounded-xl p-stack-lg card-shadow">
+<h2 class="font-label-caps text-label-caps mb-stack-md opacity-80">SUCCESS RATE (YTD)</h2>
+<div class="flex items-end gap-2 mb-2">
+<span class="font-headline-lg text-headline-lg font-bold text-on-primary">78%</span>
+<span class="material-symbols-outlined text-secondary-fixed mb-1" data-icon="trending_up">trending_up</span>
+</div>
+<p class="font-body-md text-body-md opacity-80 mb-stack-md">+12% vs previous year</p>
+<!-- Progress Bar -->
+<div class="w-full bg-surface-tint/30 rounded-full h-2 mb-2">
+<div class="bg-secondary-fixed h-2 rounded-full" style="width: 78%"></div>
+</div>
+<div class="flex justify-between font-label-caps text-label-caps text-xs opacity-70">
+<span>14 Allocated</span>
+<span>18 Total Apps</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-lg card-shadow">
+<h2 class="font-label-caps text-label-caps text-on-surface-variant mb-stack-md">EST. TOTAL GAIN (ALLOCATED)</h2>
+<div class="font-headline-lg text-headline-lg font-bold text-on-surface mb-2 font-data-tabular tracking-tight">
+                        $1.42M
+                    </div>
+<div class="flex items-center gap-1 text-secondary font-data-tabular text-sm font-semibold">
+<span class="material-symbols-outlined text-sm" data-icon="arrow_upward">arrow_upward</span>
+                        18.5% Avg Listing Pop
+                    </div>
+</div>
+<!-- Decorative / Informational Card -->
+<div class="bg-surface-container-low rounded-xl p-stack-md mt-auto">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-primary mt-1" data-icon="info">info</span>
+<div>
+<h3 class="font-data-tabular text-sm font-semibold text-on-surface mb-1">Allocation Logic</h3>
+<p class="font-body-md text-xs text-on-surface-variant leading-relaxed">Your institutional tier grants priority routing for oversubscribed tech offerings. Ensure funds remain unencumbered until settlement T+3.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Activity Log &amp; Notifications - IPO Manager</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#f7f9fb",
+                        "on-background": "#191c1e",
+                        "surface-bright": "#f7f9fb",
+                        "on-surface-variant": "#43474d",
+                        "on-error-container": "#93000a",
+                        "outline": "#74777e",
+                        "tertiary-fixed": "#d3e4fe",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "surface-container-high": "#e6e8ea",
+                        "inverse-on-surface": "#eff1f3",
+                        "secondary-fixed-dim": "#4ae183",
+                        "on-primary-fixed-variant": "#314865",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#005228",
+                        "surface-dim": "#d8dadc",
+                        "on-secondary-container": "#00743a",
+                        "inverse-primary": "#b0c8eb",
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#c4c6ce",
+                        "surface-variant": "#e0e3e5",
+                        "primary-container": "#0a2540",
+                        "on-surface": "#191c1e",
+                        "on-tertiary-container": "#7c8ca4",
+                        "surface-tint": "#49607e",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "primary-fixed": "#d2e4ff",
+                        "surface-container": "#eceef0",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#001c37",
+                        "secondary-container": "#6bfe9c",
+                        "on-secondary-fixed": "#00210c",
+                        "tertiary": "#000f22",
+                        "tertiary-container": "#142538",
+                        "primary": "#000f22",
+                        "primary-fixed-dim": "#b0c8eb",
+                        "secondary": "#006d37",
+                        "inverse-surface": "#2d3133",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-primary-container": "#768dad",
+                        "surface": "#f7f9fb",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-desktop": "40px",
+                        "base": "4px",
+                        "gutter": "24px",
+                        "stack-lg": "32px",
+                        "stack-md": "16px",
+                        "container-max": "1280px",
+                        "margin-mobile": "16px",
+                        "stack-sm": "8px"
+                    },
+                    "fontFamily": {
+                        "data-tabular": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "data-tabular": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased flex">
+<!-- SideNavBar (from JSON) -->
+<nav class="bg-surface dark:bg-inverse-surface h-screen w-64 fixed left-0 top-0 flex flex-col h-full border-r border-outline-variant dark:border-outline z-50">
+<!-- Brand Header -->
+<div class="p-gutter border-b border-outline-variant dark:border-outline bg-surface dark:bg-inverse-surface flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+<img alt="User Profile Avatar" class="w-10 h-10 rounded-full object-cover" data-alt="A minimalist, highly professional avatar or logo graphic for an institutional fintech app. Clean geometry, deep blue tones, subtle gradients indicating premium quality, modern flat lighting, simple elegant composition suitable for a high-end corporate application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOI8URtUYupeLnknV4rL0D-WEXMPICVfU7N2Dk2tZot6k8mDPIQBG2fR0-OWquuVHSPDHwCOvxBuVsqF9-SfgC-lXtcIVzc3DOxuGGO7xyWE9AabT1tmFQggo5lKJQ05Yatqik0OYoz8qs7r6Z-HBF2SLJNo2eFt3CEbNvj0y2D-_ln6uCR7QfkT1bHxAV8s2jp3BS9HYOdgyOlfVu0YmKg4fCcRzc1z0NeXBJ0dxGbzF5_nl71585uQ"/>
+</div>
+<div class="overflow-hidden">
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed truncate">Capital Flow</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant truncate uppercase tracking-wider">Institutional Managed</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 overflow-y-auto py-stack-md px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="account_balance">account_balance</span>
+<span>Linked Accounts</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="rocket_launch">rocket_launch</span>
+<span>Active IPOs</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="history_edu">history_edu</span>
+<span>Allocation History</span>
+</a>
+<!-- Active Tab: Wallets (Closest fit for notifications/activity in this nav structure contextually, though we might add a custom one if strict, but instructions say use JSON exactly. I will highlight 'Wallets' as requested by prompt "Use the SideNavBar component with the 'Wallets' or a new 'Notifications' tab active". Prompt allows new tab, but JSON strictness prefers JSON arrays. I will add Notifications as active to satisfy "new 'Notifications' tab active" instruction explicitly asked by user while keeping others from JSON.) -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span>Wallets</span>
+</a>
+<div class="pt-4 mt-4 border-t border-outline-variant/30">
+<p class="px-3 mb-2 font-label-caps text-label-caps text-on-surface-variant/60 uppercase">System</p>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-primary dark:text-primary-fixed font-bold border-r-4 border-primary bg-surface-container-lowest font-body-md text-body-md opacity-90 transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="notifications" style="font-variation-settings: 'FILL' 1;">notifications</span>
+<span>Notifications</span>
+</a>
+</div>
+</div>
+<!-- Footer CTA -->
+<div class="p-gutter border-t border-outline-variant dark:border-outline bg-surface dark:bg-inverse-surface">
+<button class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-surface-container-high hover:bg-outline-variant/20 text-primary rounded-lg transition-colors font-label-caps text-label-caps uppercase">
+<span class="material-symbols-outlined shrink-0" data-icon="help">help</span>
+                Support
+            </button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 min-h-screen flex flex-col">
+<!-- Top App Bar context (simulated for content area spacing) -->
+<header class="h-20 bg-surface-container-lowest dark:bg-primary-container border-b border-outline-variant/20 sticky top-0 z-40 px-margin-desktop flex items-center justify-between shadow-sm">
+<h2 class="font-headline-md text-headline-md font-extrabold text-primary">Activity Log</h2>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low text-on-surface-variant transition-colors relative">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low text-on-surface-variant transition-colors relative">
+<span class="material-symbols-outlined" data-icon="tune">tune</span>
+</button>
+<div class="h-6 w-px bg-outline-variant/40 mx-2"></div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-caps text-label-caps uppercase tracking-wider hover:opacity-90 transition-opacity">
+                    Mark All Read
+                </button>
+</div>
+</header>
+<!-- Canvas -->
+<div class="flex-1 p-margin-desktop max-w-container-max mx-auto w-full">
+<!-- Filters -->
+<div class="flex items-center gap-2 mb-stack-lg overflow-x-auto pb-2 scrollbar-hide">
+<button class="px-4 py-1.5 rounded-full bg-primary text-on-primary font-body-md text-body-md shadow-sm whitespace-nowrap">
+                    All Activity
+                </button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:bg-surface-container-low transition-colors font-body-md text-body-md whitespace-nowrap">
+                    Applications
+                </button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:bg-surface-container-low transition-colors font-body-md text-body-md whitespace-nowrap">
+                    Funds
+                </button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:bg-surface-container-low transition-colors font-body-md text-body-md whitespace-nowrap">
+                    System
+                </button>
+</div>
+<!-- List -->
+<div class="space-y-4 max-w-3xl">
+<!-- Card 1: Success -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-4 shadow-[0_1px_3px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_6px_rgba(0,0,0,0.05)] transition-shadow flex items-start gap-4 group cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-secondary-container/20 flex items-center justify-center shrink-0 mt-1">
+<span class="material-symbols-outlined text-secondary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-2 mb-1">
+<h3 class="font-headline-sm text-headline-sm text-primary truncate">Allocation Confirmed</h3>
+<span class="font-label-caps text-label-caps text-on-surface-variant/60 shrink-0 uppercase">2 mins ago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">
+                            TechNova IPO: 1 lot allocated to Retail Acct 01. Funds have been successfully deducted from your wallet balance.
+                        </p>
+</div>
+</div>
+<!-- Card 2: Warning -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-4 shadow-[0_1px_3px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_6px_rgba(0,0,0,0.05)] transition-shadow flex items-start gap-4 group cursor-pointer relative overflow-hidden">
+<!-- Unread indicator line -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-tertiary"></div>
+<div class="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center shrink-0 mt-1 border border-amber-100">
+<span class="material-symbols-outlined text-amber-600" data-icon="error" style="font-variation-settings: 'FILL' 1;">error</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-2 mb-1">
+<h3 class="font-headline-sm text-headline-sm text-primary truncate">Action Required: KYC Update</h3>
+<span class="font-label-caps text-label-caps text-primary shrink-0 uppercase font-bold">1 hour ago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">
+                            Your institutional compliance documentation expires in 14 days. Please upload updated proof of address to avoid trading restrictions.
+                        </p>
+<div class="mt-3">
+<button class="font-label-caps text-label-caps text-primary hover:text-surface-tint uppercase tracking-wider font-bold">Review Documents</button>
+</div>
+</div>
+</div>
+<!-- Card 3: Info/Pulse -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-4 shadow-[0_1px_3px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_6px_rgba(0,0,0,0.05)] transition-shadow flex items-start gap-4 group cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center shrink-0 mt-1">
+<span class="material-symbols-outlined text-primary" data-icon="info" style="font-variation-settings: 'FILL' 1;">info</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-2 mb-1">
+<h3 class="font-headline-sm text-headline-sm text-primary truncate">Refund Initiated</h3>
+<span class="font-label-caps text-label-caps text-on-surface-variant/60 shrink-0 uppercase">3 hours ago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">
+                            BioHealth Corp IPO: Unallocated funds of $14,500 have been released and are currently processing return to your primary linked account ending in *8892.
+                        </p>
+</div>
+</div>
+<!-- Card 4: Standard Log -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-4 shadow-[0_1px_3px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_6px_rgba(0,0,0,0.05)] transition-shadow flex items-start gap-4 group cursor-pointer opacity-75">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center shrink-0 mt-1">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="login">login</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-2 mb-1">
+<h3 class="font-headline-sm text-headline-sm text-primary truncate text-base">New Device Login</h3>
+<span class="font-label-caps text-label-caps text-on-surface-variant/60 shrink-0 uppercase">Yesterday</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">
+                            A login was detected from a new IP address in London, UK. If this was you, no action is needed.
+                        </p>
+</div>
+</div>
+</div>
+<div class="mt-8 flex justify-center max-w-3xl">
+<button class="px-6 py-2 rounded-lg border border-outline-variant/50 text-on-surface-variant hover:bg-surface-container-low transition-colors font-label-caps text-label-caps uppercase tracking-wider">
+                    Load More History
+                </button>
+</div>
+</div>
+</main>
+</body></html>
