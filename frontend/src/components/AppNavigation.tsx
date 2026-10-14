@@ -8,7 +8,6 @@ import {
   Landmark,
   Rocket,
   History,
-  Wallet,
   Bell,
   HelpCircle,
   Menu,

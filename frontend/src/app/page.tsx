@@ -11,11 +11,7 @@ import {
   Search,
   RefreshCw,
   ExternalLink,
-  ChevronRight,
   Calculator,
-  Lock,
-  Layers,
-  Percent,
   CheckCircle2,
   PieChart,
   Landmark,
@@ -26,11 +22,10 @@ import { api, IpoItem } from "@/lib/api";
 import { SAMPLE_IPOS } from "@/lib/sampleData";
 
 export default function HomePage() {
-  const { user, isSignedIn, login } = useAuth();
+  const { user, isSignedIn } = useAuth();
 
   // IPO Data & Filters
   const [ipos, setIpos] = useState<IpoItem[]>(SAMPLE_IPOS);
-  const [loadingIpos, setLoadingIpos] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("All");
   const [syncing, setSyncing] = useState(false);
@@ -44,15 +39,12 @@ export default function HomePage() {
   useEffect(() => {
     async function loadIpos() {
       try {
-        setLoadingIpos(true);
         const data = await api.getIpos();
         if (data && data.length > 0) {
           setIpos(data);
         }
       } catch {
         // Keep realistic sample data if backend is still spinning up
-      } finally {
-        setLoadingIpos(false);
       }
     }
     loadIpos();
@@ -138,13 +130,23 @@ export default function HomePage() {
 
           {/* Right Action Buttons */}
           <div className="flex items-center gap-3">
-            <Link
-              href="/dashboard"
-              className="px-4 py-2 rounded-lg bg-[#000f22] text-white text-xs font-semibold hover:bg-[#0a2540] transition-colors shadow-xs flex items-center gap-1.5"
-            >
-              <span>Launch Terminal</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+            {isSignedIn && user ? (
+              <Link
+                href="/dashboard"
+                className="px-4 py-2 rounded-lg bg-[#000f22] text-white text-xs font-semibold hover:bg-[#0a2540] transition-colors shadow-xs flex items-center gap-1.5"
+              >
+                <span>Dashboard ({user.displayName?.split(" ")[0] || "User"})</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            ) : (
+              <Link
+                href="/dashboard"
+                className="px-4 py-2 rounded-lg bg-[#000f22] text-white text-xs font-semibold hover:bg-[#0a2540] transition-colors shadow-xs flex items-center gap-1.5"
+              >
+                <span>Launch Terminal</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            )}
           </div>
         </div>
       </header>

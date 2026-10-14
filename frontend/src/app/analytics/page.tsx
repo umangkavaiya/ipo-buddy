@@ -7,18 +7,14 @@ import {
   Filter,
   Download,
   Info,
-  CheckCircle2,
-  XCircle,
-  Clock,
   Calculator,
-  ChevronRight,
 } from "lucide-react";
 import { AppNavigation } from "@/components/AppNavigation";
 import { SAMPLE_ALLOCATIONS, AllocationRecord } from "@/lib/sampleData";
 import { api, TaxCalculationResult } from "@/lib/api";
 
 export default function AnalyticsPage() {
-  const [allocations, setAllocations] = useState<AllocationRecord[]>(SAMPLE_ALLOCATIONS);
+  const [allocations] = useState<AllocationRecord[]>(SAMPLE_ALLOCATIONS);
   const [yearFilter, setYearFilter] = useState("All Years");
   const [statusFilter, setStatusFilter] = useState("All Statuses");
 

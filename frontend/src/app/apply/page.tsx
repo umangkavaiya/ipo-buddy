@@ -6,17 +6,11 @@ import { useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   CheckCircle2,
-  AlertCircle,
-  HelpCircle,
   ShieldCheck,
-  TrendingUp,
-  Landmark,
-  Zap,
-  Info,
 } from "lucide-react";
 import { AppNavigation } from "@/components/AppNavigation";
 import { api, IpoItem } from "@/lib/api";
-import { SAMPLE_IPOS, SAMPLE_ACCOUNTS, DematAccount } from "@/lib/sampleData";
+import { SAMPLE_IPOS, SAMPLE_ACCOUNTS } from "@/lib/sampleData";
 
 function SmartApplyContent() {
   const searchParams = useSearchParams();

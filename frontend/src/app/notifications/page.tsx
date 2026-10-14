@@ -5,10 +5,8 @@ import Link from "next/link";
 import {
   Bell,
   Search,
-  Filter,
   CheckCheck,
   CheckCircle2,
-  Clock,
   Landmark,
   Wallet,
   ArrowRight,

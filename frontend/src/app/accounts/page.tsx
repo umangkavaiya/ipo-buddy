@@ -2,14 +2,10 @@
 
 import React, { useState } from "react";
 import {
-  Landmark,
   Plus,
   Scale,
-  MoreVertical,
   CheckCircle2,
   Trash2,
-  ExternalLink,
-  ShieldCheck,
   RefreshCw,
   X,
 } from "lucide-react";
@@ -18,7 +14,7 @@ import { SAMPLE_ACCOUNTS, DematAccount } from "@/lib/sampleData";
 
 export default function LinkedAccountsPage() {
   const [accounts, setAccounts] = useState<DematAccount[]>(SAMPLE_ACCOUNTS);
-  const [unallocatedPool, setUnallocatedPool] = useState<number>(12500000);
+  const [unallocatedPool] = useState<number>(12500000);
   const [balancing, setBalancing] = useState<boolean>(false);
   const [balanceMsg, setBalanceMsg] = useState<string | null>(null);
 
@@ -237,7 +233,7 @@ export default function LinkedAccountsPage() {
                   <label className="block font-semibold text-[#43474d] mb-1">Broker Platform</label>
                   <select
                     value={newBroker}
-                    onChange={(e: any) => setNewBroker(e.target.value)}
+                    onChange={(e) => setNewBroker(e.target.value as DematAccount["broker"])}
                     className="w-full px-3 py-2 bg-[#f7f9fb] border border-[#c4c6ce] rounded-lg text-[#000f22] font-semibold"
                   >
                     <option value="Zerodha">Zerodha (Kite API)</option>

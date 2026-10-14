@@ -6,38 +6,27 @@ import {
   TrendingUp,
   Clock,
   Wallet,
-  ArrowUpRight,
-  MoreVertical,
   Rocket,
-  Landmark,
   CheckCircle2,
-  AlertCircle,
-  ExternalLink,
   ChevronRight,
-  Layers,
   Plus,
-  RefreshCw,
 } from "lucide-react";
 import { AppNavigation } from "@/components/AppNavigation";
 import { api, IpoItem } from "@/lib/api";
-import { SAMPLE_IPOS, SAMPLE_ACCOUNTS } from "@/lib/sampleData";
+import { SAMPLE_IPOS } from "@/lib/sampleData";
 
 export default function DashboardPage() {
   const [ipos, setIpos] = useState<IpoItem[]>(SAMPLE_IPOS);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function loadData() {
       try {
-        setLoading(true);
         const data = await api.getIpos();
         if (data && data.length > 0) {
           setIpos(data);
         }
       } catch {
         // Fallback to sample data
-      } finally {
-        setLoading(false);
       }
     }
     loadData();
